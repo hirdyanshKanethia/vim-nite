@@ -1,9 +1,16 @@
+mod game;
+mod input;
+mod map;
+mod physics;
+mod player;
+mod renderer;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    vim_game::opening_prep()?;
+    renderer::opening_prep()?;
 
-    let result = vim_game::game_loop();
+    let result = game::game_loop();
 
-    vim_game::closing_prep()?;
+    renderer::closing_prep()?;
 
     result
 }
