@@ -6,11 +6,11 @@ mod player;
 mod renderer;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    renderer::opening_prep()?;
+  renderer::opening_prep()?;
 
-    let result = game::game_loop();
+  let result = game::game_loop();
 
-    renderer::closing_prep()?;
+  renderer::closing_prep()?;
 
-    result
+  result
 }
