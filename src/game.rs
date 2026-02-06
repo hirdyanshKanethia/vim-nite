@@ -1,9 +1,9 @@
+use crate::input;
 use crate::map;
 use crate::physics;
 use crate::player;
 use crate::renderer;
 
-use crossterm::event::{self, Event, KeyCode};
 use std::thread;
 use std::time::Duration;
 
@@ -33,24 +33,8 @@ pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
     let dt = (now - last_frame).as_secs_f32();
     last_frame = now;
 
-    if event::poll(Duration::from_millis(0))? {
-      if let Event::Key(key) = event::read()? {
-        match key.code {
-          // TODO: Add key handling functions rather than just inplace functions
-          KeyCode::Char('h') => view_port.x -= 1,
-          KeyCode::Char('l') => view_port.x += 1,
-          KeyCode::Char('j') => player.x += 1.0,
-          KeyCode::Char('k') => player.x -= 1.0,
-          KeyCode::Char('n') => {
-            if player.on_ground {
-              player.vy = physics::JUMP_VELOCITY;
-              player.on_ground = false;
-            }
-          }
-          KeyCode::Char('q') => break,
-          _ => {}
-        }
-      }
+    if input::handle_input(&mut view_port, &mut player)? {
+        break;
     }
 
     physics::update_physics(&mut player, &map, dt);
