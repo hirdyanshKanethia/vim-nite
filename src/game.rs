@@ -8,7 +8,7 @@ use std::thread;
 use std::time::Duration;
 
 pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
-  let map = map::load_map("./maps/map2.txt")?;
+  let map = map::load_map("./maps/map1.txt")?;
 
   let (term_width, _) = crossterm::terminal::size()?;
 
@@ -40,11 +40,10 @@ pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
 
     physics::apply_physics(&mut player, &map, dt);
 
-    let mut map_buffer = map.clone();
-    map::update_viewport(&mut view_port, &mut player);
-    player::update_player(&mut map_buffer, &player);
+    let map_buffer = map.clone();
+    // map::update_viewport(&mut view_port, &mut player);
 
-    renderer::render(&map_buffer, view_port.x, view_port.width)?;
+    renderer::render(&map_buffer, view_port.x, view_port.width, &player)?;
 
     let frame_time = now.elapsed();
     if frame_time < tick_rate {

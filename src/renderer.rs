@@ -5,6 +5,8 @@ use crossterm::{
 };
 use std::io::{Write, stdout};
 
+use crate::{map, player};
+
 pub(crate) fn opening_prep() -> Result<(), Box<dyn std::error::Error>> {
   terminal::enable_raw_mode()?;
 
@@ -12,9 +14,10 @@ pub(crate) fn opening_prep() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub(crate) fn render(
-  map: &[Vec<char>],
+  map: &[Vec<map::Tile>],
   view_port_x: usize,
   width: usize,
+  player: &player::Player,
 ) -> Result<(), Box<dyn std::error::Error>> {
   let mut stdout = stdout();
   let (_, term_height) = crossterm::terminal::size()?;
@@ -28,6 +31,9 @@ pub(crate) fn render(
   let map_height = map.len();
   let start_y = term_height as i16 - map_height as i16;
 
+  let player_x = player.x.floor() as isize;
+  let player_y = player.y.floor() as isize;
+
   for (row_idx, row) in map.iter().enumerate() {
     let y = start_y + row_idx as i16;
     if y < 0 {
@@ -37,9 +43,15 @@ pub(crate) fn render(
     stdout.queue(cursor::MoveTo(0, y as u16))?;
 
     let end_x = (view_port_x + width).min(row.len());
-    if let Some(slice) = row.get(view_port_x..end_x) {
-      for ch in slice {
-        stdout.queue(Print(*ch))?;
+
+    for (col_idx, tile) in row[view_port_x..end_x].iter().enumerate() {
+      let world_x = view_port_x as isize + col_idx as isize;
+      let world_y = row_idx as isize;
+
+      if world_x == player_x && world_y == player_y {
+        stdout.queue(Print(player::PLAYER_CHAR))?;
+      } else {
+        stdout.queue(Print(tile.to_char()))?;
       }
     }
   }

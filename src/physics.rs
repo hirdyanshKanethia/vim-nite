@@ -1,4 +1,4 @@
-use crate::player;
+use crate::{map, player};
 
 pub(crate) const GRAVITY: f32 = 30.0;
 pub(crate) const JUMP_VELOCITY: f32 = -20.0;
@@ -7,20 +7,20 @@ pub(crate) const MOVE_ACCEL: f32 = 1000.0;
 pub(crate) const MAX_SPEED: f32 = 30.0;
 pub(crate) const FRICTION: f32 = 20.0;
 
-fn is_solid(map: &[Vec<char>], x: usize, y: usize) -> bool {
+fn is_solid(map: &[Vec<map::Tile>], x: usize, y: usize) -> bool {
   map
     .get(y)
     .and_then(|row| row.get(x))
-    .map(|c| *c != ' ')
+    .map(|c| c.is_solid())
     .unwrap_or(true)
 }
 
-pub(crate) fn apply_physics(player: &mut player::Player, map: &[Vec<char>], dt: f32) {
+pub(crate) fn apply_physics(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
   update_vertical_movement(player, map, dt);
   update_horizontal_movement(player, map, dt);
 }
 
-fn update_vertical_movement(player: &mut player::Player, map: &[Vec<char>], dt: f32) {
+fn update_vertical_movement(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
   let x = player.x.floor() as usize;
 
   let foot_y = (player.y + 1.0 + 0.01).floor() as usize;
@@ -79,7 +79,7 @@ fn update_vertical_movement(player: &mut player::Player, map: &[Vec<char>], dt: 
   }
 }
 
-fn update_horizontal_movement(player: &mut player::Player, map: &[Vec<char>], dt: f32) {
+fn update_horizontal_movement(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
   // apply friction
   if player.on_ground {
     let friction = FRICTION * dt;
