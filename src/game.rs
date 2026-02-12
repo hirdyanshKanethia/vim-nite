@@ -8,18 +8,13 @@ use std::thread;
 use std::time::Duration;
 
 pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
-  let map = map::load_map("./maps/map1.txt")?;
+  let map = map::load_map("./maps/map2.txt")?;
 
-  let (term_width, _) = crossterm::terminal::size()?;
-
-  let mut view_port = map::ViewPort {
-    x: 0,
-    width: term_width as usize,
-  };
+  let mut view_port = map::ViewPort { x: 0, width: 190, height: 43 };
 
   let mut player = player::Player {
     x: 5.0,
-    y: 20.0,
+    y: map.len() as f32 - 5.0,
     vx: 0.0,
     vy: 0.0,
     on_ground: false,
@@ -30,6 +25,11 @@ pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
   let mut last_frame = std::time::Instant::now();
 
   loop {
+    // let (term_width, term_height) = crossterm::terminal::size()?;
+
+    // view_port.width = term_width as usize;
+    // view_port.height = term_height as usize;
+
     let now = std::time::Instant::now();
     let dt = (now - last_frame).as_secs_f32();
     last_frame = now;
@@ -40,10 +40,9 @@ pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
 
     physics::apply_physics(&mut player, &map, dt);
 
-    let map_buffer = map.clone();
-    // map::update_viewport(&mut view_port, &mut player);
+    map::update_viewport(&mut view_port, &player);
 
-    renderer::render(&map_buffer, view_port.x, view_port.width, &player)?;
+    renderer::render(&map, &view_port, &player)?;
 
     let frame_time = now.elapsed();
     if frame_time < tick_rate {

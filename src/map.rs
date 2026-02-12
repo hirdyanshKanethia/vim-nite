@@ -1,5 +1,7 @@
 use std::fs;
 
+use crate::player::Player;
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Tile {
   Empty,
@@ -37,6 +39,7 @@ impl Tile {
 pub(crate) struct ViewPort {
   pub(crate) x: usize,
   pub(crate) width: usize,
+  pub(crate) height: usize,
 }
 
 pub(crate) fn load_map(path: &str) -> std::io::Result<Vec<Vec<Tile>>> {
@@ -50,18 +53,12 @@ pub(crate) fn load_map(path: &str) -> std::io::Result<Vec<Vec<Tile>>> {
   )
 }
 
-// TODO: map is divided into fixed viewports. The viewport changes when player moves out of the
-// current viewport
+pub(crate) fn update_viewport(view_port: &mut ViewPort, player: &Player) {
+  if player.x > view_port.x as f32 + view_port.width as f32 {
+    view_port.x += view_port.width;
+  }
 
-// pub(crate) fn update_viewport(view_port: &mut ViewPort, player: &mut Player) {
-//   let left_boundary = view_port.x as f32 + view_port.width as f32 * 0.2;
-//   let right_boundary = view_port.x as f32 + view_port.width as f32 * 0.4;
-//
-//   if player.x < left_boundary && view_port.x > 0 {
-//     view_port.x -= 1;
-//   }
-//
-//   if player.x > right_boundary {
-//     view_port.x += 1;
-//   }
-// }
+  if player.x < view_port.x as f32 {
+    view_port.x -= view_port.width;
+  }
+}
