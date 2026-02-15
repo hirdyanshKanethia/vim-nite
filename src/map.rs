@@ -2,15 +2,24 @@ use std::fs;
 
 use crate::player::Player;
 
+pub(crate) const CLIMB_COOLDOWN: f32 = 0.25;
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Tile {
   Empty,
   Wall,
-  PlayerSpawn,
+  // PlayerSpawn,
   // later:
   // Spike,
-  // Ladder,
+  Ladder,
   // Water,
+}
+
+pub(crate) struct TileProperties {
+  pub solid: bool,
+  pub deadly: bool,
+  pub climbable: bool,
+  pub standable: bool,
 }
 
 impl Tile {
@@ -18,7 +27,8 @@ impl Tile {
     match c {
       ' ' => Tile::Empty,
       '█' => Tile::Wall,
-      '>' => Tile::PlayerSpawn,
+      // '>' => Tile::PlayerSpawn,
+      '#' => Tile::Ladder,
       _ => Tile::Empty,
     }
   }
@@ -27,12 +37,32 @@ impl Tile {
     match self {
       Tile::Empty => ' ',
       Tile::Wall => '█',
-      Tile::PlayerSpawn => '>',
+      // Tile::PlayerSpawn => '>',
+      Tile::Ladder => '#',
     }
   }
 
-  pub(crate) fn is_solid(self) -> bool {
-    matches!(self, Tile::Wall)
+  pub(crate) fn properties(self) -> TileProperties {
+    match self {
+      Tile::Empty => TileProperties {
+        solid: false,
+        deadly: false,
+        climbable: false,
+        standable: false,
+      },
+      Tile::Wall => TileProperties {
+        solid: true,
+        deadly: false,
+        climbable: false,
+        standable: true,
+      },
+      Tile::Ladder => TileProperties {
+        solid: false,
+        deadly: false,
+        climbable: true,
+        standable: true,
+      },
+    }
   }
 }
 

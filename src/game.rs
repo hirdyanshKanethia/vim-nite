@@ -2,10 +2,15 @@ use crate::input;
 use crate::map;
 use crate::physics;
 use crate::player;
+use crate::player::update_player_properties;
 use crate::renderer;
 
 use std::thread;
 use std::time::Duration;
+
+  // TODO: 1) Add ratatui to the system to get a bottom hotbar
+  //       2) Add block types like spikes and ladders
+  //       3) Add start and finish points, maybe checkpoints too
 
 pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
   let map = map::load_map("./maps/map2.txt")?;
@@ -18,6 +23,8 @@ pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
     vx: 0.0,
     vy: 0.0,
     on_ground: false,
+    climbing: false,
+    climb_cooldown: 0.0,
   };
 
   let tick_rate = Duration::from_millis(16);
@@ -34,7 +41,9 @@ pub(crate) fn game_loop() -> Result<(), Box<dyn std::error::Error>> {
     let dt = (now - last_frame).as_secs_f32();
     last_frame = now;
 
-    if input::handle_input(&mut player, dt)? {
+    update_player_properties(&mut player, &map, dt);
+
+    if input::handle_input(&mut player, dt, &map)? {
       break;
     }
 
