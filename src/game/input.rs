@@ -1,4 +1,4 @@
-use crate::{
+use crate::game::{
   map::{self, Tile},
   physics,
   player::Player,

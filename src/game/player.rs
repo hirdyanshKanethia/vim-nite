@@ -1,4 +1,4 @@
-use crate::map::{self, TileProperties};
+use crate::game::map::{self, TileProperties};
 
 pub(crate) const PLAYER_CHAR: char = 'V';
 
@@ -10,6 +10,7 @@ pub(crate) struct Player {
   pub(crate) on_ground: bool,
   pub(crate) climbing: bool,
   pub(crate) climb_cooldown: f32,
+  pub(crate) lives: i16,
 }
 
 pub(crate) fn update_player_properties(player: &mut Player, map: &[Vec<map::Tile>], dt: f32) {
@@ -18,8 +19,8 @@ pub(crate) fn update_player_properties(player: &mut Player, map: &[Vec<map::Tile
 
   player.climbing = properties1.climbable;
   if player.climbing {
-      player.vx = 0.0;
-      player.vy = 0.0;
+    player.vx = 0.0;
+    player.vy = 0.0;
   }
   player.on_ground = properties2.standable;
   player.climb_cooldown = (player.climb_cooldown - dt).max(0.0);

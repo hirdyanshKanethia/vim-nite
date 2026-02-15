@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::player::Player;
+use crate::game::player::Player;
 
 pub(crate) const CLIMB_COOLDOWN: f32 = 0.25;
 
@@ -60,7 +60,7 @@ impl Tile {
         solid: false,
         deadly: false,
         climbable: true,
-        standable: true,
+        standable: false,
       },
     }
   }

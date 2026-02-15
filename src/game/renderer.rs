@@ -5,7 +5,7 @@ use crossterm::{
 };
 use std::io::{Write, stdout};
 
-use crate::{map, player};
+use crate::game::{map, player};
 
 pub(crate) fn opening_prep() -> Result<(), Box<dyn std::error::Error>> {
   terminal::enable_raw_mode()?;
