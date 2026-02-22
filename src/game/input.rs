@@ -4,22 +4,19 @@ use crate::game::{
   player::Player,
 };
 
-use crossterm::event::{self, Event, KeyCode};
+use crossterm::event::{self, KeyCode, KeyEvent};
 use std::time::Duration;
 
 pub(crate) fn handle_input(
   // view_port: &mut ViewPort,
   player: &mut Player,
+  key: KeyEvent,
   dt: f32,
   map: &[Vec<Tile>],
 ) -> Result<bool, Box<dyn std::error::Error>> {
   if !event::poll(Duration::from_millis(0))? {
     return Ok(false);
   }
-
-  let Event::Key(key) = event::read()? else {
-    return Ok(false);
-  };
 
   Ok(match key.code {
     KeyCode::Char('h') => handle_move_left(player, map, dt),
