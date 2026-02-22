@@ -37,13 +37,16 @@ fn main() -> Result<(), io::Error> {
       app.render(f);
     })?;
 
+    #[allow(clippy::collapsible_if)]
     if event::poll(Duration::from_millis(0))? {
       if let Event::Key(key) = event::read()? {
-        app.handle_key(key);
+        app.handle_key(key, dt);
       }
     }
 
-    // app.update(dt);
+    if app.state == AppState::Playing {
+      app.update_game(dt);
+    }
 
     if app.state == AppState::Quit {
       break;

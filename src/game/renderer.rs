@@ -1,9 +1,9 @@
 use crossterm::{
-  QueueableCommand, cursor, execute,
-  style::Print,
+  cursor, execute,
   terminal::{self, Clear, EnterAlternateScreen},
 };
-use std::io::{Write, stdout};
+use ratatui::text::Line;
+use std::io::stdout;
 
 use crate::game::{map, player};
 
@@ -14,18 +14,12 @@ pub(crate) fn opening_prep() -> Result<(), Box<dyn std::error::Error>> {
   Ok(())
 }
 
-pub(crate) fn render(
+pub(crate) fn build_frame_lines(
   map: &[Vec<map::Tile>],
   view_port: &map::ViewPort,
   player: &player::Player,
-) -> Result<(), Box<dyn std::error::Error>> {
-  let mut stdout = stdout();
-
-  execute!(
-    stdout,
-    Clear(terminal::ClearType::All),
-    cursor::MoveTo(0, 0)
-  )?;
+) -> Vec<Line<'static>> {
+  let mut lines = Vec::new();
 
   let player_x = player.x.floor() as isize;
   let player_y = player.y.floor() as isize;
@@ -35,23 +29,24 @@ pub(crate) fn render(
   for (screen_y, world_y) in (view_port.height..max_y).enumerate() {
     let row = &map[world_y];
 
-    stdout.queue(cursor::MoveTo(0, screen_y as u16))?;
-
     let max_x = (view_port.x + view_port.width).min(row.len());
+
+    let mut line = String::new();
 
     for (offset, tile) in row[view_port.x..max_x].iter().enumerate() {
       let world_x = offset + view_port.x;
 
       if world_x as isize == player_x && world_y as isize == player_y {
-        stdout.queue(Print(player::PLAYER_CHAR))?;
+        line.push(player::PLAYER_CHAR);
       } else {
-        stdout.queue(Print(tile.to_char()))?;
+        line.push(tile.to_char());
       }
     }
+
+    lines.push(Line::from(line));
   }
 
-  stdout.flush()?;
-  Ok(())
+  lines
 }
 
 pub(crate) fn closing_prep() -> Result<(), Box<dyn std::error::Error>> {

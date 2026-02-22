@@ -13,16 +13,20 @@ pub fn render(f: &mut Frame, app: &App) {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
     .constraints([
-      Constraint::Percentage(30),
-      Constraint::Percentage(40),
-      Constraint::Percentage(30),
+      Constraint::Percentage(20),
+      Constraint::Percentage(60),
+      Constraint::Percentage(20),
     ])
     .split(size);
 
-  let items = vec![ListItem::new("Select Map"), ListItem::new("Quit")];
+  let items: Vec<ListItem> = app
+    .available_maps
+    .iter()
+    .map(|name| ListItem::new(name.clone()))
+    .collect();
 
   let list = List::new(items)
-    .block(Block::default().title("Main Menu").borders(Borders::ALL))
+    .block(Block::default().title("Select Map").borders(Borders::ALL))
     .highlight_style(Style::default().add_modifier(Modifier::BOLD))
     .highlight_symbol(">> ");
 

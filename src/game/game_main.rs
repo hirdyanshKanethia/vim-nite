@@ -1,20 +1,22 @@
 use crossterm::event::KeyEvent;
+use ratatui::Frame;
+use ratatui::layout::Rect;
+use ratatui::widgets::Paragraph;
 
 use crate::game::input;
 use crate::game::map;
 use crate::game::physics;
 use crate::game::player;
-use crate::game::player::update_player_properties;
 use crate::game::renderer;
 
 use std::error::Error;
-use std::thread;
-use std::time::Duration;
+use std::path::Path;
 
-pub struct Game {
+pub(crate) struct Game {
   map: Vec<Vec<map::Tile>>,
   view_port: map::ViewPort,
-  player: player::Player,
+  pub(crate) player: player::Player,
+  pub(crate) map_name: String,
 }
 
 impl Game {
@@ -38,10 +40,17 @@ impl Game {
       lives: 3,
     };
 
+    let map_name = Path::new(map_path)
+      .file_name()
+      .and_then(|name| name.to_str())
+      .unwrap_or("unknown")
+      .to_string();
+
     Ok(Self {
       map,
       view_port,
       player,
+      map_name,
     })
   }
 
@@ -55,5 +64,13 @@ impl Game {
 
   pub fn handle_input(&mut self, key: KeyEvent, dt: f32) {
     input::handle_input(&mut self.player, key, dt, &self.map);
+  }
+
+  pub fn render(&self, f: &mut Frame, area: Rect) {
+    let lines = renderer::build_frame_lines(&self.map, &self.view_port, &self.player);
+
+    let paragraph = Paragraph::new(lines);
+
+    f.render_widget(paragraph, area);
   }
 }

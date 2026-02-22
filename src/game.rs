@@ -1,4 +1,4 @@
-pub mod game_loop;
+pub mod game_main;
 pub mod input;
 pub mod map;
 pub mod physics;
