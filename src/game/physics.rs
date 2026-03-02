@@ -7,6 +7,10 @@ pub(crate) const MOVE_ACCEL: f32 = 1000.0;
 pub(crate) const MAX_SPEED: f32 = 30.0;
 pub(crate) const FRICTION: f32 = 20.0;
 
+// ----------------------------------
+// Game physics handling and updating
+// ----------------------------------
+
 pub(crate) fn apply_physics(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
   update_vertical_movement(player, map, dt);
   update_horizontal_movement(player, map, dt);

@@ -6,6 +6,10 @@ use crate::game::{
 
 use crossterm::event::{KeyCode, KeyEvent};
 
+// ------------------------------
+// Functions to handle game input
+// ------------------------------
+
 pub(crate) fn handle_input(
   player: &mut Player,
   key: KeyEvent,

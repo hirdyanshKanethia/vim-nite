@@ -2,6 +2,9 @@ use crate::game::map::{self, TileProperties};
 
 pub(crate) const PLAYER_CHAR: char = 'V';
 
+// Player struct and methods
+// TODO: Add here the implemenation of health decrement upon dead and respawn thing
+
 pub(crate) struct Player {
   pub(crate) x: f32,
   pub(crate) y: f32,

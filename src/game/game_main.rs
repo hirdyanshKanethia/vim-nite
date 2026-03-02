@@ -12,6 +12,10 @@ use crate::game::renderer;
 use std::error::Error;
 use std::path::Path;
 
+// ---------------------------------
+// Game implementation and handling
+// ---------------------------------
+
 pub(crate) struct Game {
   map: Vec<Vec<map::Tile>>,
   view_port: map::ViewPort,
@@ -63,7 +67,7 @@ impl Game {
   }
 
   pub fn handle_input(&mut self, key: KeyEvent, dt: f32) {
-    input::handle_input(&mut self.player, key, dt, &self.map);
+    let _ = input::handle_input(&mut self.player, key, dt, &self.map);
   }
 
   pub fn render(&self, f: &mut Frame, area: Rect) {

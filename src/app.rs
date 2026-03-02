@@ -1,11 +1,15 @@
 use std::fs;
 
-use crate::game::{self, game_main::Game};
+use crate::game::game_main::Game;
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::{
   Frame,
   layout::{Constraint, Direction},
 };
+
+// -----------------------------------------
+// Central hub for TUI logic and navigation
+// -----------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppState {
@@ -39,6 +43,9 @@ impl App {
 }
 
 impl App {
+  // ----------------
+  // INPUT HANDLING
+  // ----------------
   pub fn handle_key(&mut self, key: KeyEvent, dt: f32) {
     match self.state {
       AppState::MainMenu => self.handle_main_menu_input(key),
@@ -106,11 +113,14 @@ impl App {
     }
   }
 
+  // ------------------
+  // Rendering handler
+  // ------------------
+
   pub fn render(&self, f: &mut Frame) {
     match self.state {
       AppState::MainMenu => crate::ui::render_main_menu(f, self),
 
-      // AppState::MapSelect => crate::ui::render_map_select(f, self),
       AppState::MapSelect => crate::ui::render_map_select(f, self),
 
       AppState::Playing => {
@@ -139,7 +149,9 @@ impl App {
     }
   }
 
+  // Updates game state if app state is playing
   pub fn update_game(&mut self, dt: f32) {
+    #[allow(clippy::collapsible_if)]
     if self.state == AppState::Playing {
       if let Some(game) = self.game.as_mut() {
         game.update(dt);
@@ -147,6 +159,7 @@ impl App {
     }
   }
 
+  // Loads valid maps select in the map_select app state
   pub fn load_maps(&mut self) {
     self.available_maps.clear();
 

@@ -22,6 +22,14 @@ pub(crate) struct TileProperties {
   pub standable: bool,
 }
 
+pub(crate) struct ViewPort {
+  pub(crate) x: usize,
+  pub(crate) width: usize,
+  pub(crate) height: usize,
+}
+
+// Tile implementations. Tiles possess certain properties like solid, deadly, climbable, standable
+// that define their behaviour
 impl Tile {
   pub(crate) fn from_char(c: char) -> Self {
     match c {
@@ -66,12 +74,6 @@ impl Tile {
   }
 }
 
-pub(crate) struct ViewPort {
-  pub(crate) x: usize,
-  pub(crate) width: usize,
-  pub(crate) height: usize,
-}
-
 pub(crate) fn load_map(path: &str) -> std::io::Result<Vec<Vec<Tile>>> {
   let map_text = fs::read_to_string(path)?;
 
@@ -83,6 +85,7 @@ pub(crate) fn load_map(path: &str) -> std::io::Result<Vec<Vec<Tile>>> {
   )
 }
 
+// Updates the viewport to fixed positions when player coordinates move out of veiwport
 pub(crate) fn update_viewport(view_port: &mut ViewPort, player: &Player) {
   if player.x > view_port.x as f32 + view_port.width as f32 {
     view_port.x += view_port.width;

@@ -1,19 +1,9 @@
-use crossterm::{
-  cursor, execute,
-  terminal::{self, Clear, EnterAlternateScreen},
-};
 use ratatui::text::Line;
-use std::io::stdout;
 
 use crate::game::{map, player};
 
-pub(crate) fn opening_prep() -> Result<(), Box<dyn std::error::Error>> {
-  terminal::enable_raw_mode()?;
-  execute!(stdout(), EnterAlternateScreen)?;
-
-  Ok(())
-}
-
+// builds frames in lines from the tile arrays of map, returns these frames of lines to ratatui for
+// rendering
 pub(crate) fn build_frame_lines(
   map: &[Vec<map::Tile>],
   view_port: &map::ViewPort,
@@ -47,16 +37,4 @@ pub(crate) fn build_frame_lines(
   }
 
   lines
-}
-
-pub(crate) fn closing_prep() -> Result<(), Box<dyn std::error::Error>> {
-  terminal::disable_raw_mode()?;
-
-  execute!(
-    stdout(),
-    Clear(terminal::ClearType::All),
-    cursor::MoveTo(0, 0)
-  )?;
-
-  Ok(())
 }

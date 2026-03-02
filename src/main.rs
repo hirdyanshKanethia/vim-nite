@@ -1,5 +1,5 @@
-// TODO: 1) Add ratatui to the system to get a bottom hotbar
-//       2) Add block types like spikes and ladders - ladders done
+// TODO: 1) Add ratatui to the system to get a bottom hotbar - DONE
+//       2) Add block types like spikes and ladders - ladders DONE
 //       3) Add start and finish points, maybe checkpoints too
 mod app;
 mod game;
@@ -27,11 +27,14 @@ fn main() -> Result<(), io::Error> {
 
   let mut app = App::new();
   let mut last_frame = Instant::now();
+  let frame_duration = Duration::from_millis(17);
 
+  // Main app loop
   loop {
-    let now = Instant::now();
-    let dt = (now - last_frame).as_secs_f32();
-    last_frame = now;
+    let frame_start = Instant::now();
+
+    let dt = (frame_start - last_frame).as_secs_f32();
+    last_frame = frame_start;
 
     terminal.draw(|f| {
       app.render(f);
@@ -52,7 +55,11 @@ fn main() -> Result<(), io::Error> {
       break;
     }
 
-    std::thread::sleep(Duration::from_millis(16));
+    // Sleeps the thread for the rest of the frame duration 
+    let frame_time = frame_start.elapsed();
+    if frame_time < frame_duration {
+      std::thread::sleep(frame_duration - frame_time);
+    }
   }
 
   disable_raw_mode()?;
