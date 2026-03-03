@@ -66,8 +66,12 @@ impl Game {
     map::update_viewport(&mut self.view_port, &self.player);
   }
 
-  pub fn handle_input(&mut self, key: KeyEvent, dt: f32) {
-    let _ = input::handle_input(&mut self.player, key, dt, &self.map);
+  pub fn handle_input(
+    &mut self,
+    key: KeyEvent,
+    dt: f32,
+  ) -> Result<bool, Box<dyn std::error::Error>> {
+    input::handle_input(&mut self.player, key, dt, &self.map)
   }
 
   pub fn render(&self, f: &mut Frame, area: Rect) {

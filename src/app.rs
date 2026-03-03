@@ -52,9 +52,16 @@ impl App {
       AppState::MapSelect => self.handle_map_select_input(key),
       AppState::Playing => {
         if let Some(game) = &mut self.game {
-          game.handle_input(key, dt);
+          match game.handle_input(key, dt) {
+            Ok(false) => {}
+            Ok(true) => {
+              self.state = AppState::Paused;
+            }
+            Err(_) => self.state = AppState::Quit,
+          }
         }
       }
+      AppState::Paused => self.handle_pause_menu_input(key),
       _ => {}
     }
   }
@@ -113,6 +120,35 @@ impl App {
     }
   }
 
+  fn handle_pause_menu_input(&mut self, key: KeyEvent) {
+    match key.code {
+      KeyCode::Up => {
+        if self.ui.selected_index > 0 {
+          self.ui.selected_index -= 1;
+        }
+      }
+      KeyCode::Down => {
+        if self.ui.selected_index < 1 {
+          self.ui.selected_index += 1;
+        }
+      }
+      KeyCode::Enter => match self.ui.selected_index {
+        0 => {
+          self.state = AppState::Playing; // Resume
+        }
+        1 => {
+          self.game = None;
+          self.state = AppState::MainMenu; // Back to main
+        }
+        _ => {}
+      },
+      KeyCode::Esc => {
+        self.state = AppState::Playing;
+      }
+      _ => {}
+    }
+  }
+
   // ------------------
   // Rendering handler
   // ------------------
@@ -140,8 +176,18 @@ impl App {
 
       AppState::Paused => {
         if let Some(game) = &self.game {
-          // game.render(f); // draw game first
-          // crate::ui::render_pause(f, self); // overlay pause UI
+          let chunks = ratatui::layout::Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Min(1), Constraint::Length(1)])
+            .split(f.area());
+
+          let game_area = chunks[0];
+          let hotbar_area = chunks[1];
+
+          game.render(f, game_area);
+          crate::ui::render_hotbar(f, hotbar_area, self);
+
+          crate::ui::render_pause_menu(f, self);
         }
       }
 
@@ -151,11 +197,8 @@ impl App {
 
   // Updates game state if app state is playing
   pub fn update_game(&mut self, dt: f32) {
-    #[allow(clippy::collapsible_if)]
-    if self.state == AppState::Playing {
-      if let Some(game) = self.game.as_mut() {
-        game.update(dt);
-      }
+    if let Some(game) = self.game.as_mut() {
+      game.update(dt);
     }
   }
 
