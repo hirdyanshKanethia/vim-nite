@@ -1,11 +1,12 @@
 // TODO: 1) Add ratatui to the system to get a bottom hotbar - DONE
-//       2) Add block types like spikes and ladders - ladders DONE
-//       3) Add start and finish points, maybe checkpoints too
+//       2) Add block types like spikes and ladders - both DONE
+//       3) Add start and finish points, maybe checkpoints - checkpoints DONE
 mod app;
 mod game;
 mod ui;
 
-use app::{App, AppState};
+use app::{App};
+use app::state::AppState;
 use crossterm::{
   event::{self, Event},
   execute,
