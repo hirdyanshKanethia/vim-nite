@@ -1,6 +1,7 @@
 pub mod hotbar;
 pub mod main_menu;
 pub mod map_select;
+pub mod message;
 pub mod pause_menu;
 
 use crate::app::App;
@@ -20,4 +21,8 @@ pub fn render_pause_menu(f: &mut Frame, app: &App) {
 
 pub fn render_hotbar(f: &mut Frame, area: ratatui::layout::Rect, app: &App) {
   hotbar::render(f, area, app);
+}
+
+pub fn render_message(f: &mut Frame, app: &App) {
+  message::render(f, app);
 }

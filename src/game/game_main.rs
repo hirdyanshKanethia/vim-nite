@@ -26,6 +26,8 @@ pub(crate) struct Game {
 impl Game {
   pub fn new(map_path: &str) -> Result<Self, Box<dyn Error>> {
     let map = map::load_map(map_path)?;
+    // TODO: The load_map function returns coordinates for current respawn, which is just the spawn
+    // actually
 
     let view_port = map::ViewPort {
       x: 0,
@@ -42,6 +44,8 @@ impl Game {
       climbing: false,
       climb_cooldown: 0.0,
       lives: 3,
+      alive: true,
+      respawn: (5.0, map.len() as f32 - 5.0),
     };
 
     let map_name = Path::new(map_path)
@@ -80,5 +84,21 @@ impl Game {
     let paragraph = Paragraph::new(lines);
 
     f.render_widget(paragraph, area);
+  }
+
+  // Respwans the player to the last recoreded respawn point, stored in the Player struct field
+  // respawn: (f32, f32)
+  pub fn respawn_player(&mut self) {
+    let (x, y) = self.player.respawn;
+
+    self.player.x = x + 1.0;
+    self.player.y = y;
+
+    self.player.vx = 0.0;
+    self.player.vy = 0.0;
+
+    self.player.alive = true;
+    self.player.climbing = false;
+    self.player.on_ground = true;
   }
 }

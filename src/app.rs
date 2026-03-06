@@ -17,7 +17,14 @@ pub enum AppState {
   MapSelect,
   Playing,
   Paused,
+  Message(MessageType),
   Quit,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MessageType {
+  Checkpoint,
+  Death,
 }
 
 pub struct UiState {
@@ -55,12 +62,14 @@ impl App {
           match game.handle_input(key, dt) {
             Ok(false) => {}
             Ok(true) => {
+              self.ui.selected_index = 0;
               self.state = AppState::Paused;
             }
             Err(_) => self.state = AppState::Quit,
           }
         }
       }
+      AppState::Message(_) => self.handle_message_input(key),
       AppState::Paused => self.handle_pause_menu_input(key),
       _ => {}
     }
@@ -68,12 +77,12 @@ impl App {
 
   fn handle_main_menu_input(&mut self, key: KeyEvent) {
     match key.code {
-      KeyCode::Up => {
+      KeyCode::Char('k') => {
         if self.ui.selected_index > 0 {
           self.ui.selected_index -= 1;
         }
       }
-      KeyCode::Down => {
+      KeyCode::Char('j') => {
         if self.ui.selected_index < 1 {
           self.ui.selected_index += 1;
         }
@@ -149,6 +158,18 @@ impl App {
     }
   }
 
+  fn handle_message_input(&mut self, key: KeyEvent) {
+    match key.code {
+      KeyCode::Enter => {
+        if let Some(game) = &mut self.game {
+          game.respawn_player();
+          self.state = AppState::Playing;
+        }
+      }
+      _ => {}
+    }
+  }
+
   // ------------------
   // Rendering handler
   // ------------------
@@ -191,6 +212,14 @@ impl App {
         }
       }
 
+      AppState::Message(_) => {
+        if let Some(game) = &self.game {
+          game.render(f, f.area());
+        }
+
+        crate::ui::message::render(f, self);
+      }
+
       AppState::Quit => {}
     }
   }
@@ -199,6 +228,10 @@ impl App {
   pub fn update_game(&mut self, dt: f32) {
     if let Some(game) = self.game.as_mut() {
       game.update(dt);
+
+      if !game.player.alive {
+        self.state = AppState::Message(MessageType::Death);
+      }
     }
   }
 

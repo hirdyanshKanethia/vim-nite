@@ -27,7 +27,11 @@ pub(crate) fn build_frame_lines(
       let world_x = offset + view_port.x;
 
       if world_x as isize == player_x && world_y as isize == player_y {
-        line.push(player::PLAYER_CHAR);
+        if player.alive {
+          line.push(player::PLAYER_CHAR);
+        } else {
+          line.push(player::DEAD_PLAYER_CHAR);
+        }
       } else {
         line.push(tile.to_char());
       }

@@ -55,7 +55,7 @@ fn main() -> Result<(), io::Error> {
       break;
     }
 
-    // Sleeps the thread for the rest of the frame duration 
+    // Sleeps the thread for the rest of the frame duration
     let frame_time = frame_start.elapsed();
     if frame_time < frame_duration {
       std::thread::sleep(frame_duration - frame_time);

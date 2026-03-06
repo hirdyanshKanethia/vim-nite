@@ -5,12 +5,20 @@ use crate::game::player::Player;
 pub(crate) const CLIMB_COOLDOWN: f32 = 0.25;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub(crate) enum Direction {
+  Up,
+  Down,
+  Right,
+  Left,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Tile {
   Empty,
   Wall,
   // PlayerSpawn,
   // later:
-  // Spike,
+  Spike(Direction),
   Ladder,
   // Water,
 }
@@ -37,6 +45,10 @@ impl Tile {
       '█' => Tile::Wall,
       // '>' => Tile::PlayerSpawn,
       '#' => Tile::Ladder,
+      '▲' => Tile::Spike(Direction::Up),
+      '▼' => Tile::Spike(Direction::Down),
+      '◀' => Tile::Spike(Direction::Left),
+      '▶' => Tile::Spike(Direction::Right),
       _ => Tile::Empty,
     }
   }
@@ -47,6 +59,10 @@ impl Tile {
       Tile::Wall => '█',
       // Tile::PlayerSpawn => '>',
       Tile::Ladder => '#',
+      Tile::Spike(Direction::Up) => '▲',
+      Tile::Spike(Direction::Down) => '▼',
+      Tile::Spike(Direction::Left) => '◀',
+      Tile::Spike(Direction::Right) => '▶',
     }
   }
 
@@ -68,6 +84,12 @@ impl Tile {
         solid: false,
         deadly: false,
         climbable: true,
+        standable: false,
+      },
+      Tile::Spike(_) => TileProperties {
+        solid: false,
+        deadly: true,
+        climbable: false,
         standable: false,
       },
     }
