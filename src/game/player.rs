@@ -38,6 +38,7 @@ pub(crate) fn update_player_properties(player: &mut Player, map: &[Vec<map::Tile
   player.on_ground = below_block_props.standable;
   player.climb_cooldown = (player.climb_cooldown - dt).max(0.0);
 
+  // If player is standing in a deadly block, raise interrupt and deduct life
   if player_block_props.deadly {
     player.alive = false;
     player.lives -= 1;

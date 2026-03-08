@@ -12,4 +12,5 @@ pub enum AppState {
 pub enum MessageType {
   Checkpoint,
   Death,
+  Lost,
 }

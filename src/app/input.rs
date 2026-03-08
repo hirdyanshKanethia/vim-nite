@@ -3,6 +3,7 @@ use crossterm::event::{KeyCode, KeyEvent};
 use crate::{app::state::AppState, game::game_main::Game};
 
 use super::App;
+use super::MessageType;
 
 impl App {
   pub fn handle_key(&mut self, key: KeyEvent, dt: f32) {
@@ -21,6 +22,7 @@ impl App {
           }
         }
       }
+      AppState::Message(MessageType::Lost) => self.handle_message_input_lost(key),
       AppState::Message(_) => self.handle_message_input(key),
       AppState::Paused => self.handle_pause_menu_input(key),
       _ => {}
@@ -54,12 +56,12 @@ impl App {
 
   fn handle_map_select_input(&mut self, key: KeyEvent) {
     match key.code {
-      KeyCode::Up => {
+      KeyCode::Char('k') => {
         if self.ui.selected_index > 0 {
           self.ui.selected_index -= 1;
         }
       }
-      KeyCode::Down => {
+      KeyCode::Char('j') => {
         if self.ui.selected_index + 1 < self.available_maps.len() {
           self.ui.selected_index += 1;
         }
@@ -83,12 +85,12 @@ impl App {
 
   fn handle_pause_menu_input(&mut self, key: KeyEvent) {
     match key.code {
-      KeyCode::Up => {
+      KeyCode::Char('k') => {
         if self.ui.selected_index > 0 {
           self.ui.selected_index -= 1;
         }
       }
-      KeyCode::Down => {
+      KeyCode::Char('j') => {
         if self.ui.selected_index < 1 {
           self.ui.selected_index += 1;
         }
@@ -117,6 +119,17 @@ impl App {
           game.respawn_player();
           self.state = AppState::Playing;
         }
+      }
+      _ => {}
+    }
+  }
+
+  fn handle_message_input_lost(&mut self, key: crossterm::event::KeyEvent) {
+    match key.code {
+      KeyCode::Enter => {
+        self.game = None;
+        self.ui.selected_index = 0;
+        self.state = AppState::MainMenu;
       }
       _ => {}
     }

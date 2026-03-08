@@ -9,7 +9,11 @@ impl App {
       game.update(dt);
 
       if !game.player.alive {
-        self.state = AppState::Message(MessageType::Death);
+        if game.player.lives == 0 {
+          self.state = AppState::Message(MessageType::Lost);
+        } else {
+          self.state = AppState::Message(MessageType::Death);
+        }
       }
     }
   }
