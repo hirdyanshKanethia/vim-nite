@@ -4,12 +4,12 @@ pub enum AppState {
   MapSelect,
   Playing,
   Paused,
-  Message(MessageType),
+  Message(GameEvent),
   Quit,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum MessageType {
+pub enum GameEvent {
   Checkpoint,
   Death,
   Lost,

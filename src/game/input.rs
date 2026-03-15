@@ -1,8 +1,4 @@
-use crate::game::{
-  map::{self, Tile},
-  physics,
-  player::Player,
-};
+use crate::game::{map::Tile, physics, player::Player};
 
 use crossterm::event::{KeyCode, KeyEvent};
 
@@ -38,7 +34,7 @@ fn handle_move_left(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> bool {
     && player.climbing
     && player.climb_cooldown == 0.0
   {
-    player.climb_cooldown = map::CLIMB_COOLDOWN;
+    player.climb_cooldown = physics::CLIMB_COOLDOWN;
     player.x -= 1.0;
   }
 
@@ -57,7 +53,7 @@ fn handle_move_right(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> bool {
     && player.climbing
     && player.climb_cooldown == 0.0
   {
-    player.climb_cooldown = map::CLIMB_COOLDOWN;
+    player.climb_cooldown = physics::CLIMB_COOLDOWN;
     player.x += 1.0;
   }
 
@@ -77,7 +73,7 @@ fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> bool {
       .solid
     && player.climb_cooldown == 0.0
   {
-    player.climb_cooldown = map::CLIMB_COOLDOWN;
+    player.climb_cooldown = physics::CLIMB_COOLDOWN;
     player.y -= 1.0;
   }
 
@@ -96,7 +92,7 @@ fn handle_down(player: &mut Player, map: &[Vec<Tile>]) -> bool {
       .properties()
       .climbable && player.climb_cooldown == 0.0)
   {
-    player.climb_cooldown = map::CLIMB_COOLDOWN;
+    player.climb_cooldown = physics::CLIMB_COOLDOWN;
     player.y += 1.0;
   }
 

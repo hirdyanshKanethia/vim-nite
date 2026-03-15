@@ -14,9 +14,9 @@ pub(crate) fn build_frame_lines(
   let player_x = player.x.floor() as isize;
   let player_y = player.y.floor() as isize;
 
-  let max_y = (view_port.height + view_port.height).min(map.len());
+  let max_y = (view_port.y + view_port.height).min(map.len());
 
-  for (world_y, row) in map.iter().enumerate().take(max_y).skip(view_port.height) {
+  for (world_y, row) in map.iter().enumerate().take(max_y).skip(view_port.y) {
     let max_x = (view_port.x + view_port.width).min(row.len());
 
     let mut line = String::new();

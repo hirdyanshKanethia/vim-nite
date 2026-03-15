@@ -2,6 +2,7 @@ use crate::game::{map, player};
 
 pub(crate) const GRAVITY: f32 = 40.0;
 pub(crate) const JUMP_VELOCITY: f32 = -20.0;
+pub(crate) const CLIMB_COOLDOWN: f32 = 0.25;
 
 pub(crate) const MOVE_ACCEL: f32 = 1000.0;
 pub(crate) const MAX_SPEED: f32 = 30.0;

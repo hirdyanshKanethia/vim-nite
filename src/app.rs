@@ -4,7 +4,7 @@ pub mod render;
 pub mod state;
 
 use crate::game::game_main::Game;
-pub use state::{AppState, MessageType};
+pub use state::{AppState, GameEvent};
 
 pub struct UiState {
   pub selected_index: usize,

@@ -1,6 +1,6 @@
 use ratatui::{Frame, widgets::Clear};
 
-use crate::app::{App, AppState, MessageType};
+use crate::app::{App, AppState, GameEvent};
 
 mod checkpoint;
 mod death;
@@ -19,8 +19,8 @@ pub fn render(f: &mut Frame, app: &App) {
   f.render_widget(Clear, area);
 
   match message_type {
-    MessageType::Death => death::render(f, area),
-    MessageType::Checkpoint => checkpoint::render(f, area),
-    MessageType::Lost => lost::render(f, area),
+    GameEvent::Death => death::render(f, area),
+    GameEvent::Checkpoint => checkpoint::render(f, area),
+    GameEvent::Lost => lost::render(f, area),
   }
 }

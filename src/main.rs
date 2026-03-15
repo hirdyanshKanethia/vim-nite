@@ -1,12 +1,12 @@
 // TODO: 1) Add ratatui to the system to get a bottom hotbar - DONE
 //       2) Add block types like spikes and ladders - both DONE
 //       3) Add start and finish points, maybe checkpoints - checkpoints DONE
-//   new-4) Add timer to fake speedrunning the main motive
+//   new-4) Add timer to make speedrunning the main motive
 mod app;
 mod game;
 mod ui;
 
-use app::{App};
+use app::App;
 use app::state::AppState;
 use crossterm::{
   event::{self, Event},
@@ -51,9 +51,7 @@ fn main() -> Result<(), io::Error> {
 
     if app.state == AppState::Playing {
       app.update_game(dt);
-    }
-
-    if app.state == AppState::Quit {
+    } else if app.state == AppState::Quit {
       break;
     }
 

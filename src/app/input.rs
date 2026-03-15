@@ -3,7 +3,7 @@ use crossterm::event::{KeyCode, KeyEvent};
 use crate::{app::state::AppState, game::game_main::Game};
 
 use super::App;
-use super::MessageType;
+use super::GameEvent;
 
 impl App {
   pub fn handle_key(&mut self, key: KeyEvent, dt: f32) {
@@ -22,7 +22,7 @@ impl App {
           }
         }
       }
-      AppState::Message(MessageType::Lost) => self.handle_message_input_lost(key),
+      AppState::Message(GameEvent::Lost) => self.handle_message_input_lost(key),
       AppState::Message(_) => self.handle_message_input(key),
       AppState::Paused => self.handle_pause_menu_input(key),
       _ => {}
@@ -44,7 +44,7 @@ impl App {
       KeyCode::Enter => match self.ui.selected_index {
         0 => {
           // map select
-          self.load_maps();
+          self.get_available_maps();
           self.state = AppState::MapSelect;
         }
         1 => self.state = AppState::Quit,

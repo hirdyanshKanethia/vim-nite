@@ -3,6 +3,7 @@ use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
 
+use crate::app::GameEvent;
 use crate::game::input;
 use crate::game::map;
 use crate::game::physics;
@@ -25,19 +26,20 @@ pub(crate) struct Game {
 
 impl Game {
   pub fn new(map_path: &str) -> Result<Self, Box<dyn Error>> {
-    let map = map::load_map(map_path)?;
-    // TODO: The load_map function returns coordinates for current respawn, which is just the spawn
-    // actually
+    let (map, start) = map::load_map(map_path)?;
+
+    let (start_x, start_y) = start;
 
     let view_port = map::ViewPort {
-      x: 0,
-      width: 190,
-      height: 43,
+      x: (start_x / map::VIEWPORT_WIDTH as usize) * map::VIEWPORT_WIDTH as usize,
+      y: (start_y / map::VIEWPORT_HEIGHT as usize) * map::VIEWPORT_HEIGHT as usize,
+      width: map::VIEWPORT_WIDTH as usize,
+      height: map::VIEWPORT_HEIGHT as usize,
     };
 
     let player = player::Player {
-      x: 5.0,
-      y: map.len() as f32 - 5.0,
+      x: start_x as f32,
+      y: start_y as f32,
       vx: 0.0,
       vy: 0.0,
       on_ground: false,
@@ -45,7 +47,7 @@ impl Game {
       climb_cooldown: 0.0,
       lives: 3,
       alive: true,
-      respawn: (5.0, map.len() as f32 - 5.0),
+      respawn: (start_x as f32, start_y as f32),
     };
 
     let map_name = Path::new(map_path)
@@ -62,12 +64,14 @@ impl Game {
     })
   }
 
-  pub fn update(&mut self, dt: f32) {
-    player::update_player_properties(&mut self.player, &self.map, dt);
+  pub fn update(&mut self, dt: f32) -> Option<GameEvent> {
+    let event = player::update_player_properties(&mut self.player, &self.map, dt);
 
     physics::apply_physics(&mut self.player, &self.map, dt);
 
     map::update_viewport(&mut self.view_port, &self.player);
+
+    event
   }
 
   pub fn handle_input(
