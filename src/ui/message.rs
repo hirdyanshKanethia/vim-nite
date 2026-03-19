@@ -6,6 +6,7 @@ mod checkpoint;
 mod death;
 mod layout;
 mod lost;
+mod won;
 
 pub fn render(f: &mut Frame, app: &App) {
   let message_type = match app.state {
@@ -18,9 +19,11 @@ pub fn render(f: &mut Frame, app: &App) {
   // clear background
   f.render_widget(Clear, area);
 
+  // TODO: Add message screen and render function for WON state
   match message_type {
     GameEvent::Death => death::render(f, area),
     GameEvent::Checkpoint => checkpoint::render(f, area),
     GameEvent::Lost => lost::render(f, area),
+    GameEvent::Won => won::render(f, area),
   }
 }

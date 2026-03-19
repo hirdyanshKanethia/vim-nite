@@ -1,3 +1,5 @@
+use std::usize;
+
 use crate::{
   app::GameEvent,
   game::map::{self, TileProperties},
@@ -25,18 +27,20 @@ pub(crate) struct Player {
 pub(crate) fn update_player_properties(
   player: &mut Player,
   map: &[Vec<map::Tile>],
+  exit: (usize, usize),
   dt: f32,
 ) -> Option<GameEvent> {
   let player_block_props: TileProperties = map[player.y as usize][player.x as usize].properties();
-  let top_block_props: TileProperties =
-    map[(player.y - 1.0) as usize][player.x as usize].properties();
+  // let top_block_props: TileProperties =
+  //   map[(player.y - 1.0) as usize][player.x as usize].properties();
   let below_block_props: TileProperties =
     map[(player.y + 1.0) as usize][player.x as usize].properties();
-  let left_block_props: TileProperties =
-    map[(player.y) as usize][(player.x - 1.0) as usize].properties();
-  let right_block_props: TileProperties =
-    map[(player.y) as usize][(player.x + 1.0) as usize].properties();
+  // let left_block_props: TileProperties =
+  //   map[(player.y) as usize][(player.x - 1.0) as usize].properties();
+  // let right_block_props: TileProperties =
+  //   map[(player.y) as usize][(player.x + 1.0) as usize].properties();
 
+  // If player on climbable block, set climbing properties
   player.climbing = player_block_props.climbable;
   if player.climbing {
     player.vx = 0.0;
@@ -53,11 +57,16 @@ pub(crate) fn update_player_properties(
   }
 
   // Player respawn check and interrupt
-  let player_tile = (player.x as i32, player.y as i32);
-  let respawn_tile = (player.respawn.0 as i32, player.respawn.1 as i32);
+  let player_tile = (player.x as usize, player.y as usize);
+  let respawn_tile = (player.respawn.0 as usize, player.respawn.1 as usize);
   if player_block_props.respawn && player_tile != respawn_tile {
     player.respawn = (player.x, player.y);
     return Some(GameEvent::Checkpoint);
+  }
+
+  // Player exit check
+  if player_tile == exit {
+    return Some(GameEvent::Won);
   }
 
   None

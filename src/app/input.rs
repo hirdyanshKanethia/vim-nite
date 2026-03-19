@@ -22,7 +22,8 @@ impl App {
           }
         }
       }
-      AppState::Message(GameEvent::Lost) => self.handle_message_input_lost(key),
+      AppState::Message(GameEvent::Lost) => self.handle_message_input_game_end(key),
+      AppState::Message(GameEvent::Won) => self.handle_message_input_game_end(key),
       AppState::Message(_) => self.handle_message_input(key),
       AppState::Paused => self.handle_pause_menu_input(key),
       _ => {}
@@ -124,7 +125,8 @@ impl App {
     }
   }
 
-  fn handle_message_input_lost(&mut self, key: crossterm::event::KeyEvent) {
+  // function to handle both game lost or won input
+  fn handle_message_input_game_end(&mut self, key: crossterm::event::KeyEvent) {
     match key.code {
       KeyCode::Enter => {
         self.game = None;

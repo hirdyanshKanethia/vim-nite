@@ -13,4 +13,5 @@ pub enum GameEvent {
   Checkpoint,
   Death,
   Lost,
+  Won,
 }

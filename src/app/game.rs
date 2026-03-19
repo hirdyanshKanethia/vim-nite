@@ -19,6 +19,9 @@ impl App {
           GameEvent::Checkpoint => {
             self.state = AppState::Message(GameEvent::Checkpoint);
           }
+          GameEvent::Won => {
+            self.state = AppState::Message(GameEvent::Won);
+          }
           _ => {}
         }
       }

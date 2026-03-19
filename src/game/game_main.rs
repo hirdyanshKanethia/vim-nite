@@ -22,11 +22,12 @@ pub(crate) struct Game {
   view_port: map::ViewPort,
   pub(crate) player: player::Player,
   pub(crate) map_name: String,
+  exit: (usize, usize),
 }
 
 impl Game {
   pub fn new(map_path: &str) -> Result<Self, Box<dyn Error>> {
-    let (map, start) = map::load_map(map_path)?;
+    let (map, start, exit) = map::load_map(map_path)?;
 
     let (start_x, start_y) = start;
 
@@ -61,11 +62,12 @@ impl Game {
       view_port,
       player,
       map_name,
+      exit,
     })
   }
 
   pub fn update(&mut self, dt: f32) -> Option<GameEvent> {
-    let event = player::update_player_properties(&mut self.player, &self.map, dt);
+    let event = player::update_player_properties(&mut self.player, &self.map, self.exit, dt);
 
     physics::apply_physics(&mut self.player, &self.map, dt);
 

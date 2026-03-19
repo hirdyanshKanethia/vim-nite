@@ -1,7 +1,6 @@
-// TODO: 1) Add ratatui to the system to get a bottom hotbar - DONE
-//       2) Add block types like spikes and ladders - both DONE
-//       3) Add start and finish points, maybe checkpoints - checkpoints DONE
-//   new-4) Add timer to make speedrunning the main motive
+// TODO  3) Add start and finish points, maybe checkpoints - checkpoints DONE
+//       4) Add timer to make speedrunning the main motive
+//       5) Add keys to collect in order to escape
 mod app;
 mod game;
 mod ui;

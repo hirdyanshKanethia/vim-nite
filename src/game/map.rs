@@ -28,6 +28,7 @@ pub(crate) enum Tile {
   Ladder,
   Checkpoint,
   PlayerStart,
+  MapExit,
 }
 
 pub(crate) struct TileProperties {
@@ -54,6 +55,7 @@ impl Tile {
       '▶' => Tile::Spike(Direction::Right),
       '§' => Tile::Checkpoint,
       '@' => Tile::PlayerStart,
+      'X' => Tile::MapExit,
       _ => Tile::Empty,
     }
   }
@@ -69,6 +71,7 @@ impl Tile {
       Tile::Spike(Direction::Right) => '▶',
       Tile::Checkpoint => '§',
       Tile::PlayerStart => '@',
+      Tile::MapExit => 'X',
     }
   }
 
@@ -116,14 +119,24 @@ impl Tile {
         standable: false,
         respawn: false,
       },
+      Tile::MapExit => TileProperties {
+        solid: false,
+        deadly: false,
+        climbable: false,
+        standable: false,
+        respawn: false,
+      },
     }
   }
 }
 
-pub(crate) fn load_map(path: &str) -> std::io::Result<(Vec<Vec<Tile>>, (usize, usize))> {
+pub(crate) fn load_map(
+  path: &str,
+) -> std::io::Result<(Vec<Vec<Tile>>, (usize, usize), (usize, usize))> {
   let map_text = fs::read_to_string(path)?;
 
   let mut start = None;
+  let mut exit = None;
 
   let map: Vec<Vec<Tile>> = map_text
     .lines()
@@ -135,6 +148,8 @@ pub(crate) fn load_map(path: &str) -> std::io::Result<(Vec<Vec<Tile>>, (usize, u
         .map(|(x, c)| {
           if c == '@' {
             start = Some((x, y));
+          } else if c == 'X' {
+            exit = Some((x, y));
           }
           Tile::from_char(c)
         })
@@ -143,8 +158,9 @@ pub(crate) fn load_map(path: &str) -> std::io::Result<(Vec<Vec<Tile>>, (usize, u
     .collect();
 
   let start = start.expect("Map must contain atleast one start point");
+  let exit = exit.expect("Map must contain atleast one exit point");
 
-  Ok((map, start))
+  Ok((map, start, exit))
 }
 
 // Updates the viewport to fixed positions when player coordinates move out of veiwport
