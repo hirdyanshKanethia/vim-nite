@@ -9,6 +9,7 @@ use crate::game::map;
 use crate::game::physics;
 use crate::game::player;
 use crate::game::renderer;
+use crate::timer::Timer;
 
 use std::error::Error;
 use std::path::Path;
@@ -22,6 +23,7 @@ pub(crate) struct Game {
   view_port: map::ViewPort,
   pub(crate) player: player::Player,
   pub(crate) map_name: String,
+  pub timer: Timer,
   exit: (usize, usize),
 }
 
@@ -62,6 +64,7 @@ impl Game {
       view_port,
       player,
       map_name,
+      timer: Timer::new(),
       exit,
     })
   }
@@ -72,6 +75,8 @@ impl Game {
     physics::apply_physics(&mut self.player, &self.map, dt);
 
     map::update_viewport(&mut self.view_port, &self.player);
+
+    self.timer.update(dt);
 
     event
   }

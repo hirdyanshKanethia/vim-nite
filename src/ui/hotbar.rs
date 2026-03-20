@@ -1,37 +1,57 @@
 use ratatui::{
   Frame,
-  layout::Rect,
-  style::{Color, Style},
-  text::{Line, Span},
+  layout::{Constraint, Direction, Layout, Rect},
+  style::{Color, Modifier, Style},
   widgets::Paragraph,
 };
 
-use crate::app::App;
+fn format_duration(duration: std::time::Duration) -> String {
+  let secs = duration.as_secs();
+  let mins = secs / 60;
+  let secs = secs % 60;
+  // log::debug!("Time elapsed: {:?}:{:?}", mins, secs);
+  format!("{:02}:{:02}", mins, secs)
+}
 
-pub fn render(f: &mut Frame, area: Rect, app: &App) {
-  let mode = "-- NORMAL --";
+pub fn render(f: &mut Frame, area: Rect, app: &crate::app::App) {
+  // Create a horizontal layout for the bar
+  let chunks = Layout::default()
+    .direction(Direction::Horizontal)
+    .constraints([
+      Constraint::Length(12),
+      Constraint::Min(10),
+      Constraint::Length(20),
+    ])
+    .split(area);
 
-  let map_name = if let Some(game) = &app.game {
-    &game.map_name
+  // Extract data safely from app.game (Option)
+  let (map_name, lives, timer_str) = if let Some(game) = &app.game {
+    (
+      game.map_name.as_str(),
+      format!("{} ❤", game.player.lives),
+      format_duration(game.timer.elapsed()),
+    )
   } else {
-    ""
+    ("", String::new(), String::new())
   };
 
-  let lives = if let Some(game) = &app.game {
-    format!("{} ❤", game.player.lives)
-  } else {
-    "".into()
-  };
+  // Render Mode (Left)
+  let mode_style = Style::default()
+    .fg(Color::Black)
+    .bg(Color::Blue)
+    .add_modifier(Modifier::BOLD);
+  let mode_widget = Paragraph::new("-- NORMAL --").style(mode_style);
+  f.render_widget(mode_widget, chunks[0]);
 
-  let line = Line::from(vec![
-    Span::styled(mode, Style::default().fg(Color::Black).bg(Color::White)),
-    Span::raw("   "),
-    Span::raw(map_name),
-    Span::raw("   "),
-    Span::raw(lives),
-  ]);
+  // Render Map Name (Middle-ish)
+  let map_widget = Paragraph::new(format!("  {}", map_name))
+    .style(Style::default().bg(Color::DarkGray).fg(Color::White));
+  f.render_widget(map_widget, chunks[1]);
 
-  let paragraph = Paragraph::new(line).style(Style::default().bg(Color::DarkGray));
-
-  f.render_widget(paragraph, area);
+  // Render Timer & Lives (Right)
+  let right_content = format!("{} | {} ", timer_str, lives);
+  let right_widget = Paragraph::new(right_content)
+    .alignment(ratatui::layout::Alignment::Right)
+    .style(Style::default().bg(Color::DarkGray).fg(Color::Cyan));
+  f.render_widget(right_widget, chunks[2]);
 }

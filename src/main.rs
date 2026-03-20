@@ -3,6 +3,7 @@
 //       5) Add keys to collect in order to escape
 mod app;
 mod game;
+mod timer;
 mod ui;
 
 use app::App;
@@ -18,7 +19,19 @@ use std::{
   time::{Duration, Instant},
 };
 
+// logging crates
+use simplelog::*;
+use std::fs::File;
+
 fn main() -> Result<(), io::Error> {
+  WriteLogger::init(
+    LevelFilter::Debug,
+    Config::default(),
+    File::create("game.log").unwrap(),
+  )
+  .unwrap();
+
+  log::info!("Game started");
   enable_raw_mode()?;
   let mut stdout = io::stdout();
   execute!(stdout, EnterAlternateScreen)?;
@@ -45,6 +58,7 @@ fn main() -> Result<(), io::Error> {
     if event::poll(Duration::from_millis(0))? {
       if let Event::Key(key) = event::read()? {
         app.handle_key(key, dt);
+        // log::debug!("dt value: {:?}", dt);
       }
     }
 
