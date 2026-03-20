@@ -5,7 +5,7 @@ use crate::{
   game::map::{self, TileProperties},
 };
 
-pub(crate) const PLAYER_CHAR: char = 'V';
+pub(crate) const PLAYER_CHAR: char = '𝑽';
 pub(crate) const DEAD_PLAYER_CHAR: char = '†';
 
 // Player struct and methods

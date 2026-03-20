@@ -6,11 +6,11 @@ use ratatui::{
 };
 
 fn format_duration(duration: std::time::Duration) -> String {
-  let secs = duration.as_secs();
-  let mins = secs / 60;
-  let secs = secs % 60;
-  // log::debug!("Time elapsed: {:?}:{:?}", mins, secs);
-  format!("{:02}:{:02}", mins, secs)
+  let mins = duration.as_secs() / 60;
+  let secs = duration.as_secs() % 60;
+  let millis = duration.subsec_millis();
+
+  format!("{:02}:{:02}.{:03}", mins, secs, millis)
 }
 
 pub fn render(f: &mut Frame, area: Rect, app: &crate::app::App) {

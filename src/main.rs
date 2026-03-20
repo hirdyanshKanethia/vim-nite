@@ -1,6 +1,11 @@
-// TODO  3) Add start and finish points, maybe checkpoints - checkpoints DONE
-//       4) Add timer to make speedrunning the main motive
-//       5) Add keys to collect in order to escape
+//TODO:   1) Add keys to collect in order to escape
+//        2) Add error handling for valid and invalid maps
+//        3) The hotbar currently disappears when message state is achieved, fix that i need the
+//           hotbar there :-(
+//        4) Add a bottom blank line, and make some sort of mechanism for it so that ; character
+//           triggers a state where everything typed is gone there and entering prints a funny
+//           message there like "duh, you thought something would happend. ts never works. are you
+//           new here?"
 mod app;
 mod game;
 mod timer;
