@@ -1,11 +1,15 @@
 //TODO:   1) Add keys to collect in order to escape
 //        2) Add error handling for valid and invalid maps
-//        3) The hotbar currently disappears when message state is achieved, fix that i need the
+//  DONE  3) The hotbar currently disappears when message state is achieved, fix that i need the
 //           hotbar there :-(
-//        4) Add a bottom blank line, and make some sort of mechanism for it so that ; character
+//  DONE  4) Add a bottom blank line, and make some sort of mechanism for it so that ; character
 //           triggers a state where everything typed is gone there and entering prints a funny
 //           message there like "duh, you thought something would happend. ts never works. are you
 //           new here?"
+//        5) Add map metadata saving (probably in json) to save data like best completion time
+//        6) If possible add an animation in the starting of the game
+//        7) Add colors in ts 
+//        8) Add music in ts
 mod app;
 mod game;
 mod timer;

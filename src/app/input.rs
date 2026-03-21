@@ -1,5 +1,6 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
+use crate::ui;
 use crate::{app::state::AppState, game::game_main::Game};
 
 use super::App;
@@ -9,22 +10,33 @@ impl App {
   pub fn handle_key(&mut self, key: KeyEvent, dt: f32) {
     match self.state {
       AppState::MainMenu => self.handle_main_menu_input(key),
+
       AppState::MapSelect => self.handle_map_select_input(key),
+
       AppState::Playing => {
         if let Some(game) = &mut self.game {
           match game.handle_input(key, dt) {
-            Ok(false) => {}
-            Ok(true) => {
+            AppState::Playing => {}
+            AppState::Paused => {
               self.ui.selected_index = 0;
               self.state = AppState::Paused;
             }
-            Err(_) => self.state = AppState::Quit,
+            AppState::EnteringCommand => {
+              self.ui.command_buffer.clear();
+              self.ui.command_buffer.push(':');
+              self.state = AppState::EnteringCommand;
+            }
+            _ => {}
           }
         }
       }
+
+      AppState::EnteringCommand => self.handle_entering_command_input(key),
+
       AppState::Message(GameEvent::Lost) => self.handle_message_input_game_end(key),
       AppState::Message(GameEvent::Won) => self.handle_message_input_game_end(key),
       AppState::Message(_) => self.handle_message_input(key),
+
       AppState::Paused => self.handle_pause_menu_input(key),
       _ => {}
     }
@@ -47,6 +59,7 @@ impl App {
           // map select
           self.get_available_maps();
           self.state = AppState::MapSelect;
+          self.ui.selected_index = 0;
         }
         1 => self.state = AppState::Quit,
         _ => {}
@@ -77,8 +90,9 @@ impl App {
           }
         }
       }
-      KeyCode::Esc => {
+      KeyCode::Char('q') => {
         self.state = AppState::MainMenu;
+        self.ui.selected_index = 0;
       }
       _ => {}
     }
@@ -102,11 +116,12 @@ impl App {
         }
         1 => {
           self.game = None;
+          self.ui.selected_index = 0;
           self.state = AppState::MainMenu; // Back to main
         }
         _ => {}
       },
-      KeyCode::Esc => {
+      KeyCode::Char('q') => {
         self.state = AppState::Playing;
       }
       _ => {}
@@ -133,6 +148,30 @@ impl App {
         self.ui.selected_index = 0;
         self.state = AppState::MainMenu;
       }
+      _ => {}
+    }
+  }
+
+  fn handle_entering_command_input(&mut self, key: crossterm::event::KeyEvent) {
+    match key.code {
+      KeyCode::Char(c) => {
+        self.ui.command_buffer.push(c);
+      }
+
+      KeyCode::Backspace => {
+        self.ui.command_buffer.pop();
+      }
+
+      KeyCode::Enter => {
+        self.ui.command_buffer = ui::hotbar::process_command(&self.ui.command_buffer);
+        self.state = AppState::Playing;
+      }
+
+      KeyCode::Esc => {
+        self.ui.command_buffer.clear();
+        self.state = AppState::Playing;
+      }
+
       _ => {}
     }
   }

@@ -1,4 +1,7 @@
-use crate::game::{map::Tile, physics, player::Player};
+use crate::{
+  app::AppState,
+  game::{map::Tile, physics, player::Player},
+};
 
 use crossterm::event::{KeyCode, KeyEvent};
 
@@ -11,18 +14,19 @@ pub(crate) fn handle_input(
   key: KeyEvent,
   dt: f32,
   map: &[Vec<Tile>],
-) -> Result<bool, Box<dyn std::error::Error>> {
-  Ok(match key.code {
+) -> AppState {
+  match key.code {
     KeyCode::Char('h') => handle_move_left(player, map, dt),
     KeyCode::Char('l') => handle_move_right(player, map, dt),
     KeyCode::Char('k') => handle_up(player, map),
     KeyCode::Char('j') => handle_down(player, map),
-    KeyCode::Char('q') => true,
-    _ => false,
-  })
+    KeyCode::Char(';') | KeyCode::Char(':') => AppState::EnteringCommand,
+    KeyCode::Char('q') => AppState::Paused,
+    _ => AppState::Playing,
+  }
 }
 
-fn handle_move_left(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> bool {
+fn handle_move_left(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> AppState {
   if player.on_ground {
     player.vx -= physics::MOVE_ACCEL * dt;
     player.vx = player.vx.clamp(-physics::MAX_SPEED, physics::MAX_SPEED)
@@ -38,10 +42,10 @@ fn handle_move_left(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> bool {
     player.x -= 1.0;
   }
 
-  false
+  AppState::Playing
 }
 
-fn handle_move_right(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> bool {
+fn handle_move_right(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> AppState {
   if player.on_ground {
     player.vx += physics::MOVE_ACCEL * dt;
     player.vx = player.vx.clamp(-physics::MAX_SPEED, physics::MAX_SPEED)
@@ -57,10 +61,10 @@ fn handle_move_right(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> bool {
     player.x += 1.0;
   }
 
-  false
+  AppState::Playing
 }
 
-fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> bool {
+fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> AppState {
   // Case for when player is jumping
   if !player.climbing && player.on_ground {
     player.vy = physics::JUMP_VELOCITY;
@@ -77,10 +81,10 @@ fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> bool {
     player.y -= 1.0;
   }
 
-  false
+  AppState::Playing
 }
 
-fn handle_down(player: &mut Player, map: &[Vec<Tile>]) -> bool {
+fn handle_down(player: &mut Player, map: &[Vec<Tile>]) -> AppState {
   // Simply climb down while current position is of climbing
   if (player.climbing
     && !map[(player.y + 1.0) as usize][player.x as usize]
@@ -96,5 +100,5 @@ fn handle_down(player: &mut Player, map: &[Vec<Tile>]) -> bool {
     player.y += 1.0;
   }
 
-  false
+  AppState::Playing
 }

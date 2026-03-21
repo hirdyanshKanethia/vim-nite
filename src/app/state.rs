@@ -5,6 +5,7 @@ pub enum AppState {
   Playing,
   Paused,
   Message(GameEvent),
+  EnteringCommand,
   Quit,
 }
 

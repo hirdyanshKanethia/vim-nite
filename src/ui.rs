@@ -19,8 +19,13 @@ pub fn render_pause_menu(f: &mut Frame, app: &App) {
   pause_menu::render(f, app);
 }
 
-pub fn render_hotbar(f: &mut Frame, area: ratatui::layout::Rect, app: &App) {
-  hotbar::render(f, area, app);
+pub fn render_hotbar(
+  f: &mut Frame,
+  hotbar_area: ratatui::layout::Rect,
+  command_area: ratatui::layout::Rect,
+  app: &App,
+) {
+  hotbar::render(f, hotbar_area, command_area, app);
 }
 
 pub fn render_message(f: &mut Frame, app: &App) {

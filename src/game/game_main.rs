@@ -3,6 +3,7 @@ use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
 
+use crate::app::AppState;
 use crate::app::GameEvent;
 use crate::game::input;
 use crate::game::map;
@@ -81,11 +82,7 @@ impl Game {
     event
   }
 
-  pub fn handle_input(
-    &mut self,
-    key: KeyEvent,
-    dt: f32,
-  ) -> Result<bool, Box<dyn std::error::Error>> {
+  pub fn handle_input(&mut self, key: KeyEvent, dt: f32) -> AppState {
     input::handle_input(&mut self.player, key, dt, &self.map)
   }
 

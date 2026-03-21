@@ -8,6 +8,7 @@ pub use state::{AppState, GameEvent};
 
 pub struct UiState {
   pub selected_index: usize,
+  pub command_buffer: String,
 }
 
 pub struct App {
@@ -21,7 +22,10 @@ impl App {
   pub fn new() -> Self {
     Self {
       state: AppState::MainMenu,
-      ui: UiState { selected_index: 0 },
+      ui: UiState {
+        selected_index: 0,
+        command_buffer: String::new(),
+      },
       game: None,
       available_maps: Vec::new(),
     }
