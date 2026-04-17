@@ -181,3 +181,27 @@ pub(crate) fn update_viewport(view_port: &mut ViewPort, player: &Player) {
     view_port.y = view_port.y.saturating_sub(view_port.height);
   }
 }
+
+/// Checks if a map file is valid without fully parsing it into Tiles
+pub fn is_map_valid(path: &str) -> bool {
+  let Ok(map_text) = fs::read_to_string(path) else {
+    return false;
+  };
+
+  let mut has_start = false;
+  let mut has_exit = false;
+
+  for c in map_text.chars() {
+    if c == '@' {
+      has_start = true;
+    }
+    if c == 'X' {
+      has_exit = true;
+    }
+    if has_start && has_exit {
+      break;
+    }
+  }
+
+  has_start && has_exit
+}

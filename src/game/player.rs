@@ -1,7 +1,5 @@
-use std::usize;
-
 use crate::{
-  app::GameEvent,
+  app::Event,
   game::map::{self, TileProperties},
 };
 
@@ -29,7 +27,7 @@ pub(crate) fn update_player_properties(
   map: &[Vec<map::Tile>],
   exit: (usize, usize),
   dt: f32,
-) -> Option<GameEvent> {
+) -> Option<Event> {
   let player_block_props: TileProperties = map[player.y as usize][player.x as usize].properties();
   // let top_block_props: TileProperties =
   //   map[(player.y - 1.0) as usize][player.x as usize].properties();
@@ -53,7 +51,7 @@ pub(crate) fn update_player_properties(
   if player_block_props.deadly {
     player.alive = false;
     player.lives -= 1;
-    return Some(GameEvent::Death);
+    return Some(Event::PlayerDeath);
   }
 
   // Player respawn check and interrupt
@@ -61,12 +59,12 @@ pub(crate) fn update_player_properties(
   let respawn_tile = (player.respawn.0 as usize, player.respawn.1 as usize);
   if player_block_props.respawn && player_tile != respawn_tile {
     player.respawn = (player.x, player.y);
-    return Some(GameEvent::Checkpoint);
+    return Some(Event::GameCheckpointReached);
   }
 
   // Player exit check
   if player_tile == exit {
-    return Some(GameEvent::Won);
+    return Some(Event::GameWon);
   }
 
   None

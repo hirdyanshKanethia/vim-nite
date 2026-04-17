@@ -13,7 +13,7 @@ const EMPTY_COMMAND_MESSAGES: &[&str] = &[
 
 const UNKNOWN_COMMAND_MESSAGES: &[&str] = &[
   "Find the exit broski, this isn't your ordinary vim",
-  "'X' is the exit brody, this won't worked. Never did",
+  "'X' is the exit brody, this won't work. Never did",
   "nuh uh broski, getting deja vu already?",
   "nostalgic no?",
 ];

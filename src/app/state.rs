@@ -4,15 +4,16 @@ pub enum AppState {
   MapSelect,
   Playing,
   Paused,
-  Message(GameEvent),
+  Message(Event),
   EnteringCommand,
   Quit,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GameEvent {
-  Checkpoint,
-  Death,
-  Lost,
-  Won,
+pub enum Event {
+  GameCheckpointReached,
+  PlayerDeath,
+  GameLost,
+  GameWon,
+  InvalidMap,
 }

@@ -1,10 +1,11 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
+use crate::game::map;
 use crate::ui;
 use crate::{app::state::AppState, game::game_main::Game};
 
 use super::App;
-use super::GameEvent;
+use super::Event;
 
 impl App {
   pub fn handle_key(&mut self, key: KeyEvent, dt: f32) {
@@ -33,8 +34,9 @@ impl App {
 
       AppState::EnteringCommand => self.handle_entering_command_input(key),
 
-      AppState::Message(GameEvent::Lost) => self.handle_message_input_game_end(key),
-      AppState::Message(GameEvent::Won) => self.handle_message_input_game_end(key),
+      AppState::Message(Event::InvalidMap) => self.handle_message_input_invalid_map(key),
+      AppState::Message(Event::GameLost) => self.handle_message_input_game_end(key),
+      AppState::Message(Event::GameWon) => self.handle_message_input_game_end(key),
       AppState::Message(_) => self.handle_message_input(key),
 
       AppState::Paused => self.handle_pause_menu_input(key),
@@ -83,6 +85,11 @@ impl App {
       KeyCode::Enter => {
         if let Some(map_name) = self.available_maps.get(self.ui.selected_index) {
           let path = format!("./maps/{}", map_name);
+
+          if !map::is_map_valid(&path) {
+            self.state = AppState::Message(Event::InvalidMap);
+            return;
+          }
 
           if let Ok(game) = Game::new(&path) {
             self.game = Some(game);
@@ -172,6 +179,17 @@ impl App {
         self.state = AppState::Playing;
       }
 
+      _ => {}
+    }
+  }
+
+  fn handle_message_input_invalid_map(&mut self, key: crossterm::event::KeyEvent) {
+    match key.code {
+      KeyCode::Enter | KeyCode::Char('q') => {
+        self.game = None;
+        self.ui.selected_index = 0;
+        self.state = AppState::MapSelect;
+      }
       _ => {}
     }
   }

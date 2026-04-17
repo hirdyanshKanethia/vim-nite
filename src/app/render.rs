@@ -21,6 +21,10 @@ impl App {
         crate::ui::render_pause_menu(f, self);
       }
 
+      AppState::Message(super::Event::InvalidMap) => {
+        crate::ui::render_message(f, self);
+      }
+
       AppState::Message(_) => {
         self.render_game_with_hotbar(f);
         crate::ui::render_message(f, self);

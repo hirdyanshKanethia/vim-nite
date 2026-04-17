@@ -4,7 +4,7 @@ use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
 
 use crate::app::AppState;
-use crate::app::GameEvent;
+use crate::app::Event;
 use crate::game::input;
 use crate::game::map;
 use crate::game::physics;
@@ -70,7 +70,7 @@ impl Game {
     })
   }
 
-  pub fn update(&mut self, dt: f32) -> Option<GameEvent> {
+  pub fn update(&mut self, dt: f32) -> Option<Event> {
     let event = player::update_player_properties(&mut self.player, &self.map, self.exit, dt);
 
     physics::apply_physics(&mut self.player, &self.map, dt);

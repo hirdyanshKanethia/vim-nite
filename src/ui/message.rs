@@ -1,9 +1,10 @@
 use ratatui::{Frame, widgets::Clear};
 
-use crate::app::{App, AppState, GameEvent};
+use crate::app::{App, AppState, Event};
 
 mod checkpoint;
 mod death;
+mod invalid_map;
 mod layout;
 mod lost;
 mod won;
@@ -14,16 +15,16 @@ pub fn render(f: &mut Frame, app: &App) {
     _ => return,
   };
 
-  let area = layout::centered_rect(50, 25, f.area());
+  let area = layout::centered_rect(50, 30, f.area());
 
   // clear background
   f.render_widget(Clear, area);
 
-  // TODO: Add message screen and render function for WON state
   match message_type {
-    GameEvent::Death => death::render(f, area),
-    GameEvent::Checkpoint => checkpoint::render(f, area),
-    GameEvent::Lost => lost::render(f, area),
-    GameEvent::Won => won::render(f, area),
+    Event::InvalidMap => invalid_map::render(f, area),
+    Event::PlayerDeath => death::render(f, area),
+    Event::GameCheckpointReached => checkpoint::render(f, area),
+    Event::GameLost => lost::render(f, area),
+    Event::GameWon => won::render(f, area),
   }
 }
