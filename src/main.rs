@@ -1,7 +1,9 @@
 //TODO:   1) Add keys to collect in order to escape
 //        6) Add animations between screens
-//        7) Add colors to different tile types
+//        7) Add colors to different tile types - DONE
 //        8) Add music in ts
+//        ?) Make it so that if the viewport can be extended on the left, draw a row of dots or
+//        lines to make the intuition - DONE
 mod app;
 mod game;
 mod timer;

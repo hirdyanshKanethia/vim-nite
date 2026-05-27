@@ -59,14 +59,14 @@ pub fn render(f: &mut Frame, status_bar_area: Rect, command_area: Rect, app: &cr
 
   // Render Map Name (Middle)
   let map_widget = Paragraph::new(format!("  {}", map_name))
-    .style(Style::default().bg(Color::DarkGray).fg(Color::White));
+    .style(Style::default().bg(Color::Black).fg(Color::White));
   f.render_widget(map_widget, status_chunks[1]);
 
   // Render Timer & Lives (Right)
   let right_content = format!("{} | {} ", timer_str, lives);
   let right_widget = Paragraph::new(right_content)
     .alignment(ratatui::layout::Alignment::Right)
-    .style(Style::default().bg(Color::DarkGray).fg(Color::Cyan));
+    .style(Style::default().bg(Color::Black).fg(Color::White));
   f.render_widget(right_widget, status_chunks[2]);
 
   // Command bar at the bottom

@@ -2,8 +2,10 @@ use std::fs;
 
 use crate::game::player::Player;
 
-pub(crate) const VIEWPORT_HEIGHT: i32 = 43;
-pub(crate) const VIEWPORT_WIDTH: i32 = 190;
+use ratatui::style::Color;
+
+pub(crate) const VIEWPORT_HEIGHT: i32 = 40;
+pub(crate) const VIEWPORT_WIDTH: i32 = 185;
 
 pub(crate) struct ViewPort {
   pub(crate) x: usize,
@@ -143,6 +145,18 @@ impl Tile {
         standable: false,
         respawn: false,
       },
+    }
+  }
+
+  pub(crate) fn color(self) -> Color {
+    match self {
+      Tile::Empty => Color::Reset,
+      Tile::Wall => Color::DarkGray,
+      Tile::Ladder => Color::Yellow,
+      Tile::Spike(_) => Color::LightRed,
+      Tile::Checkpoint => Color::Blue,
+      Tile::PlayerStart => Color::LightBlue,
+      Tile::MapExit => Color::Cyan,
     }
   }
 }
