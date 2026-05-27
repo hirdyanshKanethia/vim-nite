@@ -1,15 +1,6 @@
 //TODO:   1) Add keys to collect in order to escape
-//  DONE  2) Invalid maps show red on map screen and valid maps show green
-//        Invalid map selection presents a simple modal saying map is not valid to play
-//  DONE  3) The hotbar currently disappears when message state is achieved, fix that i need the
-//           hotbar there :-(
-//  DONE  4) Add a bottom blank line, and make some sort of mechanism for it so that ; character
-//           triggers a state where everything typed is gone there and entering prints a funny
-//           message there like "duh, you thought something would happend. ts never works. are you
-//           new here?"
-//  DONE  5) Add map metadata saving (probably in json) to save data like best completion time
-//        6) If possible add an animation in the starting of the game
-//        7) Add colors in ts 
+//        6) Add animations between screens
+//        7) Add colors to different tile types
 //        8) Add music in ts
 mod app;
 mod game;
@@ -52,6 +43,20 @@ fn main() -> Result<(), io::Error> {
   let mut app = App::new();
   let mut last_frame = Instant::now();
   let frame_duration = Duration::from_millis(17);
+
+  // panic handling
+  let original_hook = std::panic::take_hook();
+  std::panic::set_hook(Box::new(move |panic_info| {
+    // Restore the terminal
+    let _ = crossterm::terminal::disable_raw_mode();
+    let _ = crossterm::execute!(
+      std::io::stdout(),
+      crossterm::terminal::LeaveAlternateScreen,
+      crossterm::cursor::Show
+    );
+    // Print the actual panic message using the original hook
+    original_hook(panic_info);
+  }));
 
   // Main app loop
   loop {

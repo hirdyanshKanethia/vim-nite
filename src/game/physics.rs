@@ -1,4 +1,7 @@
-use crate::game::{map, player};
+use crate::game::{
+  map::{self, MapTiles},
+  player,
+};
 
 pub(crate) const GRAVITY: f32 = 40.0;
 pub(crate) const JUMP_VELOCITY: f32 = -20.0;
@@ -12,12 +15,12 @@ pub(crate) const FRICTION: f32 = 20.0;
 // Game physics handling and updating
 // ----------------------------------
 
-pub(crate) fn apply_physics(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
+pub(crate) fn apply_physics(player: &mut player::Player, map: &MapTiles, dt: f32) {
   update_vertical_movement(player, map, dt);
   update_horizontal_movement(player, map, dt);
 }
 
-fn update_vertical_movement(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
+fn update_vertical_movement(player: &mut player::Player, map: &MapTiles, dt: f32) {
   if player.climbing {
     return;
   }
@@ -27,7 +30,12 @@ fn update_vertical_movement(player: &mut player::Player, map: &[Vec<map::Tile>],
   let foot_y = (player.y + 1.0 + 0.01).floor() as usize;
 
   // set on_ground to false if player is not on a solid block
-  if !map[foot_y][x].properties().standable {
+  if !map
+    .tile_at(x, foot_y)
+    .unwrap_or(&map::Tile::Wall)
+    .properties()
+    .standable
+  {
     player.on_ground = false;
   }
 
@@ -50,7 +58,13 @@ fn update_vertical_movement(player: &mut player::Player, map: &[Vec<map::Tile>],
 
     for tile_y in start_y..=end_y {
       // if solid block found while falling
-      if map[tile_y as usize][x].properties().standable {
+      // if map[tile_y as usize][x].properties().standable {
+      if map
+        .tile_at(x, tile_y as usize)
+        .unwrap_or(&map::Tile::Wall)
+        .properties()
+        .standable
+      {
         player.vy = 0.0;
         player.y = tile_y as f32 - 1.0;
         player.on_ground = true;
@@ -69,7 +83,13 @@ fn update_vertical_movement(player: &mut player::Player, map: &[Vec<map::Tile>],
 
     // collision
     for tile_y in (end_y..=start_y).rev() {
-      if map[tile_y as usize][x].properties().solid {
+      // if map[tile_y as usize][x].properties().solid {
+      if map
+        .tile_at(x, tile_y as usize)
+        .unwrap_or(&map::Tile::Wall)
+        .properties()
+        .solid
+      {
         player.y = tile_y as f32 + 1.0;
         player.vy = 0.0;
         return;
@@ -80,7 +100,7 @@ fn update_vertical_movement(player: &mut player::Player, map: &[Vec<map::Tile>],
   }
 }
 
-fn update_horizontal_movement(player: &mut player::Player, map: &[Vec<map::Tile>], dt: f32) {
+fn update_horizontal_movement(player: &mut player::Player, map: &MapTiles, dt: f32) {
   // apply friction
   if player.on_ground {
     let friction = FRICTION * dt;
@@ -106,7 +126,12 @@ fn update_horizontal_movement(player: &mut player::Player, map: &[Vec<map::Tile>
 
     for tile_x in start_x..=end_x {
       // collision
-      if map[y][tile_x as usize].properties().solid {
+      if map
+        .tile_at(tile_x as usize, y)
+        .unwrap_or(&map::Tile::Wall)
+        .properties()
+        .solid
+      {
         player.x = tile_x as f32 - 1.0;
         player.vx = 0.0;
         return;
@@ -123,7 +148,13 @@ fn update_horizontal_movement(player: &mut player::Player, map: &[Vec<map::Tile>
 
     for tile_x in (end_x..=start_x).rev() {
       // collision
-      if map[y][tile_x as usize].properties().solid {
+      // if map[y][tile_x as usize].properties().solid {
+      if map
+        .tile_at(tile_x as usize, y)
+        .unwrap_or(&map::Tile::Wall)
+        .properties()
+        .solid
+      {
         player.x = tile_x as f32 + 1.0;
         player.vx = 0.0;
         return;

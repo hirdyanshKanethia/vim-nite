@@ -3,7 +3,7 @@ pub mod input;
 pub mod render;
 pub mod state;
 
-use crate::game::game_main::Game;
+use crate::game::{game_main::Game, map::MapInfo};
 pub use state::{AppState, Event};
 
 pub struct UiState {
@@ -15,7 +15,7 @@ pub struct App {
   pub state: AppState,
   pub ui: UiState,
   pub game: Option<Game>,
-  pub available_maps: Vec<String>,
+  pub available_maps: Vec<MapInfo>,
 }
 
 impl App {

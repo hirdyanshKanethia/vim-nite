@@ -6,12 +6,10 @@ use ratatui::{
   widgets::{Block, Borders, List, ListItem},
 };
 
-use crate::{app::App, game::map::is_map_valid, game::save::SaveData};
+use crate::app::App;
 
 pub fn render(f: &mut Frame, app: &App) {
   let size = f.area();
-  // Load stats once at the start of the frame to avoid repeated disk I/O
-  let save_data = SaveData::load();
 
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -25,32 +23,25 @@ pub fn render(f: &mut Frame, app: &App) {
   let items: Vec<ListItem> = app
     .available_maps
     .iter()
-    .map(|name| {
-      let path = format!("./maps/{}", name);
-      let is_valid = is_map_valid(&path);
-
+    .map(|info| {
       // 1. Determine base color
-      let name_color = if is_valid { Color::Green } else { Color::Red };
+      let name_color = if info.is_valid { Color::Green } else { Color::Red };
 
       // 2. Fetch stats for this map
-      let stats_text = if let Some(stats) = save_data.maps.get(name) {
-        if stats.completions > 0 {
-          format!(
-            "  [ Best: {:.3}s | {} Completions ]",
-            stats.best_time_ms as f64 / 1000.0,
-            stats.completions
-          )
-        } else {
-          "  [ Unbeaten ]".to_string()
-        }
+      let stats_text = if info.completions > 0 {
+        format!(
+          "  [ Best: {:.3}s | {} Completions ]",
+          info.best_time_ms.unwrap_or(0) as f64 / 1000.0,
+          info.completions
+        )
       } else {
-        "  [ New Map ]".to_string()
+        "  [ Unbeaten ]".to_string()
       };
 
       // 3. Build a styled Line
       let line = Line::from(vec![
         Span::styled(
-          name.clone(),
+          info.name.clone(),
           Style::default().fg(name_color).add_modifier(Modifier::BOLD),
         ),
         Span::styled(

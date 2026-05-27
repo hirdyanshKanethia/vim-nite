@@ -12,6 +12,17 @@ pub(crate) struct ViewPort {
   pub(crate) height: usize,
 }
 
+pub(crate) struct MapTiles {
+  pub(crate) tiles: Vec<Vec<Tile>>,
+}
+
+pub struct MapInfo {
+  pub name: String,
+  pub is_valid: bool,
+  pub best_time_ms: Option<u64>,
+  pub completions: u32,
+}
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Direction {
   Up,
@@ -41,8 +52,14 @@ pub(crate) struct TileProperties {
   pub respawn: bool, // The tile is a respawn point, the player can respawn near this tile
 }
 
-// Tile implementations. Tiles possess certain properties like solid, deadly, climbable, standable
-// that define their behaviour
+impl MapTiles {
+  pub(crate) fn tile_at(&self, x: usize, y: usize) -> Option<&Tile> {
+    self.tiles.get(y).and_then(|row| row.get(x))
+  }
+}
+
+/// Tile implementations. Tiles possess certain properties like solid, deadly, climbable, standable
+/// that define their behaviour
 impl Tile {
   pub(crate) fn from_char(c: char) -> Self {
     match c {
@@ -130,9 +147,7 @@ impl Tile {
   }
 }
 
-pub(crate) fn load_map(
-  path: &str,
-) -> std::io::Result<(Vec<Vec<Tile>>, (usize, usize), (usize, usize))> {
+pub(crate) fn load_map(path: &str) -> std::io::Result<(MapTiles, (usize, usize), (usize, usize))> {
   let map_text = fs::read_to_string(path)?;
 
   let mut start = None;
@@ -157,13 +172,29 @@ pub(crate) fn load_map(
     })
     .collect();
 
-  let start = start.expect("Map must contain atleast one start point");
-  let exit = exit.expect("Map must contain atleast one exit point");
+  // let exit = exit.expect("Map must contain atleast one exit point");
+  let start = start.ok_or_else(|| {
+    std::io::Error::new(
+      std::io::ErrorKind::InvalidData,
+      "Missing
+  start point",
+    )
+  })?;
+
+  let exit = exit.ok_or_else(|| {
+    std::io::Error::new(
+      std::io::ErrorKind::InvalidData,
+      "Missing
+  exit point",
+    )
+  })?;
+
+  let map = MapTiles { tiles: map };
 
   Ok((map, start, exit))
 }
 
-// Updates the viewport to fixed positions when player coordinates move out of veiwport
+/// Updates the viewport to fixed positions when player coordinates move out of veiwport
 pub(crate) fn update_viewport(view_port: &mut ViewPort, player: &Player) {
   if player.x >= view_port.x as f32 + view_port.width as f32 {
     view_port.x += view_port.width;
@@ -188,20 +219,19 @@ pub fn is_map_valid(path: &str) -> bool {
     return false;
   };
 
-  let mut has_start = false;
-  let mut has_exit = false;
+  let mut start_count = 0;
+  let mut exit_count = 0;
 
-  for c in map_text.chars() {
-    if c == '@' {
-      has_start = true;
-    }
-    if c == 'X' {
-      has_exit = true;
-    }
-    if has_start && has_exit {
-      break;
+  for line in map_text.lines() {
+    for c in line.chars() {
+      if c == '@' {
+        start_count += 1;
+      }
+      if c == 'X' {
+        exit_count += 1;
+      }
     }
   }
 
-  has_start && has_exit
+  start_count == 1 && exit_count == 1
 }

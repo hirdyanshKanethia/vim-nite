@@ -1,6 +1,10 @@
 use crate::{
   app::AppState,
-  game::{map::Tile, physics, player::Player},
+  game::{
+    map::{MapTiles, Tile},
+    physics,
+    player::Player,
+  },
 };
 
 use crossterm::event::{KeyCode, KeyEvent};
@@ -13,7 +17,7 @@ pub(crate) fn handle_input(
   player: &mut Player,
   key: KeyEvent,
   dt: f32,
-  map: &[Vec<Tile>],
+  map: &MapTiles,
 ) -> AppState {
   match key.code {
     KeyCode::Char('h') => handle_move_left(player, map, dt),
@@ -26,13 +30,15 @@ pub(crate) fn handle_input(
   }
 }
 
-fn handle_move_left(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> AppState {
+fn handle_move_left(player: &mut Player, map: &MapTiles, dt: f32) -> AppState {
   if player.on_ground {
     player.vx -= physics::MOVE_ACCEL * dt;
     player.vx = player.vx.clamp(-physics::MAX_SPEED, physics::MAX_SPEED)
   }
 
-  if !map[player.y as usize][(player.x - 1.0) as usize]
+  if !map
+    .tile_at((player.x - 1.0) as usize, player.y as usize)
+    .unwrap_or(&Tile::Wall)
     .properties()
     .solid
     && player.climbing
@@ -45,13 +51,15 @@ fn handle_move_left(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> AppState
   AppState::Playing
 }
 
-fn handle_move_right(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> AppState {
+fn handle_move_right(player: &mut Player, map: &MapTiles, dt: f32) -> AppState {
   if player.on_ground {
     player.vx += physics::MOVE_ACCEL * dt;
     player.vx = player.vx.clamp(-physics::MAX_SPEED, physics::MAX_SPEED)
   }
 
-  if !map[player.y as usize][(player.x + 1.0) as usize]
+  if !map
+    .tile_at((player.x + 1.0) as usize, player.y as usize)
+    .unwrap_or(&Tile::Wall)
     .properties()
     .solid
     && player.climbing
@@ -64,7 +72,7 @@ fn handle_move_right(player: &mut Player, map: &[Vec<Tile>], dt: f32) -> AppStat
   AppState::Playing
 }
 
-fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> AppState {
+fn handle_up(player: &mut Player, map: &MapTiles) -> AppState {
   // Case for when player is jumping
   if !player.climbing && player.on_ground {
     player.vy = physics::JUMP_VELOCITY;
@@ -72,7 +80,9 @@ fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> AppState {
   }
   // Case for when player is climbing
   if player.climbing
-    && !map[(player.y - 1.0) as usize][player.x as usize]
+    && !map
+      .tile_at(player.x as usize, (player.y - 1.0) as usize)
+      .unwrap_or(&Tile::Wall)
       .properties()
       .solid
     && player.climb_cooldown == 0.0
@@ -84,15 +94,19 @@ fn handle_up(player: &mut Player, map: &[Vec<Tile>]) -> AppState {
   AppState::Playing
 }
 
-fn handle_down(player: &mut Player, map: &[Vec<Tile>]) -> AppState {
+fn handle_down(player: &mut Player, map: &MapTiles) -> AppState {
   // Simply climb down while current position is of climbing
   if (player.climbing
-    && !map[(player.y + 1.0) as usize][player.x as usize]
+    && !map
+      .tile_at(player.x as usize, (player.y + 1.0) as usize)
+      .unwrap_or(&Tile::Wall)
       .properties()
       .solid
     && player.climb_cooldown == 0.0)
      // Climb down if current position is not of climbing but the block below is climbable
-    || (map[(player.y + 1.0) as usize][player.x as usize]
+    || (map
+      .tile_at(player.x as usize, (player.y + 1.0) as usize)
+      .unwrap_or(&Tile::Wall)
       .properties()
       .climbable && player.climb_cooldown == 0.0)
   {

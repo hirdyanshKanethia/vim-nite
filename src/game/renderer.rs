@@ -5,7 +5,7 @@ use crate::game::{map, player};
 // builds frames in lines from the tile arrays of map, returns these frames of lines to ratatui for
 // rendering
 pub(crate) fn build_frame_lines(
-  map: &[Vec<map::Tile>],
+  map: &map::MapTiles,
   view_port: &map::ViewPort,
   player: &player::Player,
 ) -> Vec<Line<'static>> {
@@ -14,9 +14,9 @@ pub(crate) fn build_frame_lines(
   let player_x = player.x.floor() as isize;
   let player_y = player.y.floor() as isize;
 
-  let max_y = (view_port.y + view_port.height).min(map.len());
+  let max_y = (view_port.y + view_port.height).min(map.tiles.len());
 
-  for (world_y, row) in map.iter().enumerate().take(max_y).skip(view_port.y) {
+  for (world_y, row) in map.tiles.iter().enumerate().take(max_y).skip(view_port.y) {
     let max_x = (view_port.x + view_port.width).min(row.len());
 
     let mut line = String::new();

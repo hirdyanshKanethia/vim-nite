@@ -1,6 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::game::map;
 use crate::ui;
 use crate::{app::state::AppState, game::game_main::Game};
 
@@ -83,10 +82,10 @@ impl App {
         }
       }
       KeyCode::Enter => {
-        if let Some(map_name) = self.available_maps.get(self.ui.selected_index) {
-          let path = format!("./maps/{}", map_name);
+        if let Some(map_info) = self.available_maps.get(self.ui.selected_index) {
+          let path = format!("./maps/{}", map_info.name);
 
-          if !map::is_map_valid(&path) {
+          if !map_info.is_valid {
             self.state = AppState::Message(Event::InvalidMap);
             return;
           }

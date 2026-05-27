@@ -7,6 +7,7 @@ use crate::app::AppState;
 use crate::app::Event;
 use crate::game::input;
 use crate::game::map;
+use crate::game::map::MapTiles;
 use crate::game::physics;
 use crate::game::player;
 use crate::game::renderer;
@@ -20,7 +21,7 @@ use std::path::Path;
 // ---------------------------------
 
 pub(crate) struct Game {
-  map: Vec<Vec<map::Tile>>,
+  map: MapTiles,
   view_port: map::ViewPort,
   pub(crate) player: player::Player,
   pub(crate) map_name: String,
