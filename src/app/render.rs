@@ -10,6 +10,8 @@ impl App {
     match self.state {
       AppState::MainMenu => crate::ui::render_main_menu(f, self),
 
+      AppState::HowToPlay => crate::ui::render_how_to_play(f, self),
+
       AppState::MapSelect => crate::ui::render_map_select(f, self),
 
       AppState::Playing => {

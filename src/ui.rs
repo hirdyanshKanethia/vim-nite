@@ -1,4 +1,5 @@
 pub mod hotbar;
+pub mod how_to_play;
 pub mod main_menu;
 pub mod map_select;
 pub mod message;
@@ -9,6 +10,10 @@ use ratatui::Frame;
 
 pub fn render_main_menu(f: &mut Frame, app: &App) {
   main_menu::render(f, app);
+}
+
+pub fn render_how_to_play(f: &mut Frame, app: &App) {
+  how_to_play::render(f, app);
 }
 
 pub fn render_map_select(f: &mut Frame, app: &App) {

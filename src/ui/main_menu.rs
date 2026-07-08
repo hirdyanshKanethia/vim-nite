@@ -76,7 +76,11 @@ pub fn render(f: &mut Frame, app: &App) {
   let logo = Paragraph::new(logo_lines).alignment(Alignment::Center);
   f.render_widget(logo, chunks[1]);
 
-  let items = vec![ListItem::new("Select Map"), ListItem::new("Quit")];
+  let items = vec![
+    ListItem::new("Select Map"),
+    ListItem::new("How to Play"),
+    ListItem::new("Quit"),
+  ];
 
   let list = List::new(items)
     .block(

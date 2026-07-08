@@ -9,6 +9,7 @@ pub use state::{AppState, Event};
 pub struct UiState {
   pub selected_index: usize,
   pub command_buffer: String,
+  pub slideshow_index: usize,
 }
 
 pub struct App {
@@ -25,6 +26,7 @@ impl App {
       ui: UiState {
         selected_index: 0,
         command_buffer: String::new(),
+        slideshow_index: 0,
       },
       game: None,
       available_maps: Vec::new(),

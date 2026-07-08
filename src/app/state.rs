@@ -2,6 +2,7 @@
 pub enum AppState {
   MainMenu,
   MapSelect,
+  HowToPlay,
   Playing,
   Paused,
   Message(Event),

@@ -11,6 +11,8 @@ impl App {
     match self.state {
       AppState::MainMenu => self.handle_main_menu_input(key),
 
+      AppState::HowToPlay => self.handle_how_to_play_input(key),
+
       AppState::MapSelect => self.handle_map_select_input(key),
 
       AppState::Playing => {
@@ -51,7 +53,7 @@ impl App {
         }
       }
       KeyCode::Char('j') => {
-        if self.ui.selected_index < 1 {
+        if self.ui.selected_index < 2 {
           self.ui.selected_index += 1;
         }
       }
@@ -62,7 +64,11 @@ impl App {
           self.state = AppState::MapSelect;
           self.ui.selected_index = 0;
         }
-        1 => self.state = AppState::Quit,
+        1 => {
+          self.state = AppState::HowToPlay;
+          self.ui.slideshow_index = 0;
+        }
+        2 => self.state = AppState::Quit,
         _ => {}
       },
       _ => {}
@@ -188,6 +194,27 @@ impl App {
         self.game = None;
         self.ui.selected_index = 0;
         self.state = AppState::MapSelect;
+      }
+      _ => {}
+    }
+  }
+
+  fn handle_how_to_play_input(&mut self, key: crossterm::event::KeyEvent) {
+    match key.code {
+      KeyCode::Char('l') | KeyCode::Right | KeyCode::Enter => {
+        if self.ui.slideshow_index < 2 {
+          self.ui.slideshow_index += 1;
+        } else {
+          self.state = AppState::MainMenu;
+        }
+      }
+      KeyCode::Char('h') | KeyCode::Left => {
+        if self.ui.slideshow_index > 0 {
+          self.ui.slideshow_index -= 1;
+        }
+      }
+      KeyCode::Char('q') | KeyCode::Esc => {
+        self.state = AppState::MainMenu;
       }
       _ => {}
     }
