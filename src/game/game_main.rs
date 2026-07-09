@@ -1,7 +1,8 @@
 use crossterm::event::KeyEvent;
 use ratatui::Frame;
 use ratatui::layout::Rect;
-use ratatui::widgets::Paragraph;
+use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
+use ratatui::style::{Color, Style};
 
 use crate::app::AppState;
 use crate::app::Event;
@@ -90,7 +91,13 @@ impl Game {
   pub fn render(&self, f: &mut Frame, area: Rect) {
     let lines = renderer::build_frame_lines(&self.map, &self.view_port, &self.player);
 
-    let paragraph = Paragraph::new(lines);
+    let block = Block::default()
+      .borders(Borders::ALL)
+      .border_type(BorderType::Rounded)
+      .border_style(Style::default().fg(Color::Rgb(57, 211, 83)))
+      .title(format!(" vim-nite | {} ", self.map_name));
+
+    let paragraph = Paragraph::new(lines).block(block);
 
     f.render_widget(paragraph, area);
   }
