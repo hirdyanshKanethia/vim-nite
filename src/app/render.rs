@@ -56,6 +56,31 @@ impl App {
       let hotbar_area = chunks[1];
       let command_area = chunks[2];
 
+      let required_width = crate::game::map::VIEWPORT_WIDTH as u16 + 2; // +2 for game border
+      let required_height = crate::game::map::VIEWPORT_HEIGHT as u16 + 2; // +2 for game border
+
+      if game_area.width < required_width || game_area.height < required_height {
+        let msg = format!(
+            "Terminal too small!\nRequires at least {}x{} for the game area.\n(Current game area: {}x{})",
+            required_width, required_height, game_area.width, game_area.height
+        );
+        let msg_paragraph = ratatui::widgets::Paragraph::new(msg)
+            .alignment(ratatui::layout::Alignment::Center)
+            .style(ratatui::style::Style::default().fg(ratatui::style::Color::Red).add_modifier(ratatui::style::Modifier::BOLD));
+        
+        let center_chunks = ratatui::layout::Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Percentage(45),
+                Constraint::Length(3),
+                Constraint::Percentage(45),
+            ])
+            .split(f.area());
+            
+        f.render_widget(msg_paragraph, center_chunks[1]);
+        return;
+      }
+
       game.render(f, game_area);
       crate::ui::render_hotbar(f, hotbar_area, command_area, self);
     }
