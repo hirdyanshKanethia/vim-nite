@@ -3,7 +3,7 @@ use ratatui::{
   layout::{Alignment, Constraint, Direction, Layout},
   style::{Color, Modifier, Style},
   text::{Line, Span},
-  widgets::{Block, Borders, Clear, Paragraph},
+  widgets::{Block, BorderType, Borders, Clear, Paragraph},
 };
 
 use crate::app::App;
@@ -14,9 +14,9 @@ pub fn render(f: &mut Frame, app: &App) {
   let vertical = Layout::default()
     .direction(Direction::Vertical)
     .constraints([
-      Constraint::Percentage(40),
-      Constraint::Length(7),
-      Constraint::Percentage(40),
+      Constraint::Percentage(35),
+      Constraint::Length(10),
+      Constraint::Percentage(35),
     ])
     .split(area);
 
@@ -33,26 +33,38 @@ pub fn render(f: &mut Frame, app: &App) {
 
   f.render_widget(Clear, popup_area);
 
-  let block = Block::default().title("Paused").borders(Borders::ALL);
+  let map_name = if let Some(game) = &app.game {
+      game.map_name.as_str()
+  } else {
+      "Unknown"
+  };
+
+  let block = Block::default()
+    .title(format!(" PAUSED: {} ", map_name))
+    .borders(Borders::ALL)
+    .border_type(BorderType::Rounded)
+    .border_style(Style::default().fg(Color::Rgb(57, 211, 83)));
 
   let options = ["Resume", "Main Menu"];
 
-  let lines: Vec<Line> = options
-    .iter()
-    .enumerate()
-    .map(|(i, text)| {
+  let mut lines = Vec::new();
+  lines.push(Line::from(""));
+  lines.push(Line::from(Span::styled("Take a breather.", Style::default().fg(Color::DarkGray))));
+  lines.push(Line::from(""));
+
+  for (i, text) in options.iter().enumerate() {
       if i == app.ui.selected_index {
-        Line::from(Span::styled(
-          format!("> {}", text),
+        lines.push(Line::from(Span::styled(
+          format!(">> {} ", text),
           Style::default()
-            .fg(Color::Yellow)
+            .fg(Color::Black)
+            .bg(Color::Rgb(57, 211, 83))
             .add_modifier(Modifier::BOLD),
-        ))
+        )));
       } else {
-        Line::from(format!("  {}", text))
+        lines.push(Line::from(format!("   {} ", text)));
       }
-    })
-    .collect();
+  }
 
   let paragraph = Paragraph::new(lines)
     .block(block)

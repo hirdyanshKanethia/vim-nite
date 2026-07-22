@@ -8,7 +8,7 @@ use crate::game::{map, player};
 // builds frames in lines from the tile arrays of map, returns these frames of lines to ratatui for
 // rendering
 pub(crate) fn build_frame_lines(
-  map: &map::MapTiles,
+  map: &map::MapData,
   view_port: &map::ViewPort,
   player: &player::Player,
 ) -> Vec<Line<'static>> {

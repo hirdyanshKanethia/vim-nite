@@ -1,7 +1,7 @@
 use crate::{
   app::AppState,
   game::{
-    map::{MapTiles, Tile},
+    map::{MapData, Tile},
     physics,
     player::Player,
   },
@@ -17,7 +17,7 @@ pub(crate) fn handle_input(
   player: &mut Player,
   key: KeyEvent,
   dt: f32,
-  map: &MapTiles,
+  map: &MapData,
 ) -> AppState {
   match key.code {
     KeyCode::Char('h') => handle_move_left(player, map, dt),
@@ -30,7 +30,7 @@ pub(crate) fn handle_input(
   }
 }
 
-fn handle_move_left(player: &mut Player, map: &MapTiles, dt: f32) -> AppState {
+fn handle_move_left(player: &mut Player, map: &MapData, dt: f32) -> AppState {
   if player.on_ground {
     player.vx -= physics::MOVE_ACCEL * dt;
     player.vx = player.vx.clamp(-physics::MAX_SPEED, physics::MAX_SPEED)
@@ -51,7 +51,7 @@ fn handle_move_left(player: &mut Player, map: &MapTiles, dt: f32) -> AppState {
   AppState::Playing
 }
 
-fn handle_move_right(player: &mut Player, map: &MapTiles, dt: f32) -> AppState {
+fn handle_move_right(player: &mut Player, map: &MapData, dt: f32) -> AppState {
   if player.on_ground {
     player.vx += physics::MOVE_ACCEL * dt;
     player.vx = player.vx.clamp(-physics::MAX_SPEED, physics::MAX_SPEED)
@@ -72,7 +72,7 @@ fn handle_move_right(player: &mut Player, map: &MapTiles, dt: f32) -> AppState {
   AppState::Playing
 }
 
-fn handle_up(player: &mut Player, map: &MapTiles) -> AppState {
+fn handle_up(player: &mut Player, map: &MapData) -> AppState {
   // Case for when player is jumping
   if !player.climbing && player.on_ground {
     player.vy = physics::JUMP_VELOCITY;
@@ -94,7 +94,7 @@ fn handle_up(player: &mut Player, map: &MapTiles) -> AppState {
   AppState::Playing
 }
 
-fn handle_down(player: &mut Player, map: &MapTiles) -> AppState {
+fn handle_down(player: &mut Player, map: &MapData) -> AppState {
   // Simply climb down while current position is of climbing
   if (player.climbing
     && !map

@@ -1,4 +1,5 @@
 use std::fs;
+use serde::{Deserialize, Serialize};
 
 use crate::game::player::Player;
 
@@ -14,8 +15,15 @@ pub(crate) struct ViewPort {
   pub(crate) height: usize,
 }
 
-pub(crate) struct MapTiles {
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub(crate) struct MapConfig {
+    pub viewport_width: Option<usize>,
+    pub viewport_height: Option<usize>,
+}
+
+pub(crate) struct MapData {
   pub(crate) tiles: Vec<Vec<Tile>>,
+  pub(crate) config: MapConfig,
 }
 
 pub struct MapInfo {
@@ -54,7 +62,7 @@ pub(crate) struct TileProperties {
   pub respawn: bool, // The tile is a respawn point, the player can respawn near this tile
 }
 
-impl MapTiles {
+impl MapData {
   pub(crate) fn tile_at(&self, x: usize, y: usize) -> Option<&Tile> {
     self.tiles.get(y).and_then(|row| row.get(x))
   }
@@ -161,8 +169,15 @@ impl Tile {
   }
 }
 
-pub(crate) fn load_map(path: &str) -> std::io::Result<(MapTiles, (usize, usize), (usize, usize))> {
+pub(crate) fn load_map(path: &str) -> std::io::Result<(MapData, (usize, usize), (usize, usize))> {
   let map_text = fs::read_to_string(path)?;
+
+  let json_path = path.replace(".txt", ".json");
+  let config = if let Ok(json_text) = fs::read_to_string(&json_path) {
+    serde_json::from_str(&json_text).unwrap_or_default()
+  } else {
+    MapConfig::default()
+  };
 
   let mut start = None;
   let mut exit = None;
@@ -203,7 +218,7 @@ pub(crate) fn load_map(path: &str) -> std::io::Result<(MapTiles, (usize, usize),
     )
   })?;
 
-  let map = MapTiles { tiles: map };
+  let map = MapData { tiles: map, config };
 
   Ok((map, start, exit))
 }

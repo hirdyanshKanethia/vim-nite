@@ -1,5 +1,5 @@
 use crate::game::{
-  map::{self, MapTiles},
+  map::{self, MapData},
   player,
 };
 
@@ -15,12 +15,12 @@ pub(crate) const FRICTION: f32 = 20.0;
 // Game physics handling and updating
 // ----------------------------------
 
-pub(crate) fn apply_physics(player: &mut player::Player, map: &MapTiles, dt: f32) {
+pub(crate) fn apply_physics(player: &mut player::Player, map: &MapData, dt: f32) {
   update_vertical_movement(player, map, dt);
   update_horizontal_movement(player, map, dt);
 }
 
-fn update_vertical_movement(player: &mut player::Player, map: &MapTiles, dt: f32) {
+fn update_vertical_movement(player: &mut player::Player, map: &MapData, dt: f32) {
   if player.climbing {
     return;
   }
@@ -100,7 +100,7 @@ fn update_vertical_movement(player: &mut player::Player, map: &MapTiles, dt: f32
   }
 }
 
-fn update_horizontal_movement(player: &mut player::Player, map: &MapTiles, dt: f32) {
+fn update_horizontal_movement(player: &mut player::Player, map: &MapData, dt: f32) {
   // apply friction
   if player.on_ground {
     let friction = FRICTION * dt;

@@ -1,6 +1,6 @@
 use crate::{
   app::Event,
-  game::map::{self, MapTiles, TileProperties},
+  game::map::{self, MapData, TileProperties},
 };
 
 pub(crate) const PLAYER_CHAR: char = '𝑽';
@@ -24,7 +24,7 @@ pub(crate) struct Player {
 
 pub(crate) fn update_player_properties(
   player: &mut Player,
-  map: &MapTiles,
+  map: &MapData,
   exit: (usize, usize),
   dt: f32,
 ) -> Option<Event> {

@@ -56,8 +56,8 @@ impl App {
       let hotbar_area = chunks[1];
       let command_area = chunks[2];
 
-      let required_width = crate::game::map::VIEWPORT_WIDTH as u16 + 2; // +2 for game border
-      let required_height = crate::game::map::VIEWPORT_HEIGHT as u16 + 2; // +2 for game border
+      let required_width = game.view_port.width as u16;
+      let required_height = game.view_port.height as u16;
 
       if game_area.width < required_width || game_area.height < required_height {
         let msg = format!(

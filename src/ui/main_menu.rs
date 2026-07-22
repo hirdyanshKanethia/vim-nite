@@ -4,7 +4,7 @@ use ratatui::{
   layout::{Alignment, Constraint, Direction, Layout},
   style::{Color, Modifier, Style},
   text::{Line, Span},
-  widgets::{Block, BorderType, Borders, List, ListItem, Paragraph, Padding},
+  widgets::{Block, BorderType, Borders, List, ListItem, Padding, Paragraph},
 };
 
 fn is_block_char(c: char) -> bool {
@@ -59,31 +59,27 @@ pub fn render(f: &mut Frame, app: &App) {
 
   // Global Wrapper
   let global_block = Block::default()
-      .title(" [ VIM-NITE v0.1.0 ] ")
-      .borders(Borders::ALL)
-      .border_type(BorderType::Rounded)
-      .border_style(Style::default().fg(Color::Rgb(57, 211, 83)));
+    .borders(Borders::ALL)
+    .border_type(BorderType::Rounded)
+    .border_style(Style::default().fg(Color::Rgb(57, 211, 83)));
 
   let inner_area = global_block.inner(size);
   f.render_widget(global_block, size);
 
   let h_chunks = Layout::default()
     .direction(Direction::Horizontal)
-    .constraints([
-      Constraint::Percentage(60),
-      Constraint::Percentage(40),
-    ])
+    .constraints([Constraint::Percentage(60), Constraint::Percentage(40)])
     .split(inner_area);
 
   // Left Column: Logo + Menu
   let left_chunks = Layout::default()
     .direction(Direction::Vertical)
     .constraints([
-      Constraint::Min(2), // Top margin
+      Constraint::Min(2),     // Top margin
       Constraint::Length(22), // Logo
-      Constraint::Length(3), // Spacer
-      Constraint::Length(8), // Menu items
-      Constraint::Min(2), // Bottom margin
+      Constraint::Length(3),  // Spacer
+      Constraint::Length(8),  // Menu items
+      Constraint::Min(2),     // Bottom margin
     ])
     .split(h_chunks[0]);
 
@@ -129,30 +125,38 @@ pub fn render(f: &mut Frame, app: &App) {
     .split(h_chunks[1]);
 
   let info_text = vec![
-      Line::from(""),
-      Line::from(Span::styled("Welcome to Vim-nite!", Style::default().fg(Color::Rgb(57, 211, 83)).add_modifier(Modifier::BOLD))),
-      Line::from(""),
-      Line::from("The terminal platformer powered"),
-      Line::from("by Vim motions."),
-      Line::from(""),
-      Line::from(""),
-      Line::from(Span::styled("Controls:", Style::default().fg(Color::White).add_modifier(Modifier::BOLD))),
-      Line::from("  j : Move Down"),
-      Line::from("  k : Move Up"),
-      Line::from("  h : Move Left / Prev Slide"),
-      Line::from("  l : Move Right / Next Slide"),
-      Line::from("  Enter : Select / Action"),
-      Line::from("  q : Quit / Go Back"),
+    Line::from(""),
+    Line::from(Span::styled(
+      "Welcome to Vim-nite!",
+      Style::default()
+        .fg(Color::Rgb(57, 211, 83))
+        .add_modifier(Modifier::BOLD),
+    )),
+    Line::from(""),
+    Line::from("The terminal platformer powered"),
+    Line::from("by Vim motions."),
+    Line::from(""),
+    Line::from(""),
+    Line::from(Span::styled(
+      "Controls:",
+      Style::default()
+        .fg(Color::White)
+        .add_modifier(Modifier::BOLD),
+    )),
+    Line::from("  j : Move Down"),
+    Line::from("  k : Move Up"),
+    Line::from("  h : Move Left / Prev Slide"),
+    Line::from("  l : Move Right / Next Slide"),
+    Line::from("  Enter : Select / Action"),
+    Line::from("  q : Quit / Go Back"),
   ];
 
-  let info_panel = Paragraph::new(info_text)
-    .alignment(Alignment::Left)
-    .block(
-      Block::default()
-        .borders(Borders::LEFT)
-        .border_style(Style::default().fg(Color::Rgb(57, 211, 83)))
-        .padding(Padding::new(4, 2, 4, 0))
-    );
+  let info_panel = Paragraph::new(info_text).alignment(Alignment::Left).block(
+    Block::default()
+      .borders(Borders::LEFT)
+      .border_style(Style::default().fg(Color::Rgb(57, 211, 83)))
+      .padding(Padding::new(4, 2, 4, 0)),
+  );
 
   f.render_widget(info_panel, right_chunks[0]);
 }

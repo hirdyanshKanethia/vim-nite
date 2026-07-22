@@ -1,14 +1,14 @@
 use crossterm::event::KeyEvent;
 use ratatui::Frame;
 use ratatui::layout::Rect;
-use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
 use ratatui::style::{Color, Style};
+use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
 
 use crate::app::AppState;
 use crate::app::Event;
 use crate::game::input;
 use crate::game::map;
-use crate::game::map::MapTiles;
+use crate::game::map::MapData;
 use crate::game::physics;
 use crate::game::player;
 use crate::game::renderer;
@@ -22,8 +22,8 @@ use std::path::Path;
 // ---------------------------------
 
 pub(crate) struct Game {
-  map: MapTiles,
-  view_port: map::ViewPort,
+  map: MapData,
+  pub(crate) view_port: map::ViewPort,
   pub(crate) player: player::Player,
   pub(crate) map_name: String,
   pub timer: Timer,
@@ -36,11 +36,20 @@ impl Game {
 
     let (start_x, start_y) = start;
 
+    let vp_w = map
+      .config
+      .viewport_width
+      .unwrap_or(map::VIEWPORT_WIDTH as usize);
+    let vp_h = map
+      .config
+      .viewport_height
+      .unwrap_or(map::VIEWPORT_HEIGHT as usize);
+
     let view_port = map::ViewPort {
-      x: (start_x / map::VIEWPORT_WIDTH as usize) * map::VIEWPORT_WIDTH as usize,
-      y: (start_y / map::VIEWPORT_HEIGHT as usize) * map::VIEWPORT_HEIGHT as usize,
-      width: map::VIEWPORT_WIDTH as usize,
-      height: map::VIEWPORT_HEIGHT as usize,
+      x: (start_x / vp_w) * vp_w,
+      y: (start_y / vp_h) * vp_h,
+      width: vp_w,
+      height: vp_h,
     };
 
     let player = player::Player {
@@ -91,13 +100,7 @@ impl Game {
   pub fn render(&self, f: &mut Frame, area: Rect) {
     let lines = renderer::build_frame_lines(&self.map, &self.view_port, &self.player);
 
-    let block = Block::default()
-      .borders(Borders::ALL)
-      .border_type(BorderType::Rounded)
-      .border_style(Style::default().fg(Color::Rgb(57, 211, 83)))
-      .title(format!(" vim-nite | {} ", self.map_name));
-
-    let paragraph = Paragraph::new(lines).block(block);
+    let paragraph = Paragraph::new(lines);
 
     f.render_widget(paragraph, area);
   }
